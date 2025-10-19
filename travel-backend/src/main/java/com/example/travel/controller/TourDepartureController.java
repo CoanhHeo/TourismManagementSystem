@@ -28,6 +28,19 @@ public class TourDepartureController {
     private TourDepartureTourGuideRepository tourDepartureTourGuideRepository;
 
     /**
+     * Get all tour departures (Admin only)
+     * GET /api/tour-departures
+     */
+    @GetMapping
+    public ResponseEntity<List<TourDepartureDto>> getAllDepartures() {
+        List<TourDeparture> departures = tourDepartureRepository.findAll();
+        List<TourDepartureDto> dtos = departures.stream()
+                .map(d -> tourDepartureService.getDepartureWithAvailability(d.getTourDepartureID()))
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
      * Get all upcoming departures
      * GET /api/tour-departures/upcoming
      */

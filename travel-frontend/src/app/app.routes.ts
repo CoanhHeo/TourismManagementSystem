@@ -10,6 +10,8 @@ import { AddTourComponent } from '../features/admin/add-tour/add-tour.component'
 import { AddTourDepartureComponent } from '../features/admin/add-tour-departure/add-tour-departure.component';
 import { ManageToursComponent } from '../features/admin/manage-tours/manage-tours.component';
 import { EditTourComponent } from '../features/admin/edit-tour/edit-tour.component';
+import { ManageTourDeparturesComponent } from '../features/admin/manage-tour-departures/manage-tour-departures.component';
+import { EditTourDepartureComponent } from '../features/admin/edit-tour-departure/edit-tour-departure.component';
 import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
@@ -40,8 +42,18 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
   { 
+    path: 'admin/departures', 
+    component: ManageTourDeparturesComponent,
+    canActivate: [adminGuard]
+  },
+  { 
     path: 'admin/departures/add', 
     component: AddTourDepartureComponent,
+    canActivate: [adminGuard]
+  },
+  { 
+    path: 'admin/departures/edit/:id', 
+    component: EditTourDepartureComponent,
     canActivate: [adminGuard]
   },
   { path: '', pathMatch: 'full', redirectTo: 'tours' },
