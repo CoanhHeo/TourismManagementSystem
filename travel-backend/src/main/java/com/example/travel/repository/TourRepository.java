@@ -16,4 +16,7 @@ public interface TourRepository extends JpaRepository<Tour, Integer> {
     @Query("SELECT t FROM Tour t WHERE LOWER(t.tourName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Tour> searchTours(String keyword);
+    
+    // ✅ KHÔNG CẦN methods xóa/thêm promotion nữa
+    // Giờ chỉ cần set tour.setPromotion(promotion) và save()
 }

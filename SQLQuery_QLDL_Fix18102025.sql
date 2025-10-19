@@ -56,7 +56,20 @@ CREATE INDEX IX_User_Email ON dbo.[Users](Email);
 CREATE INDEX IX_User_RoleID ON dbo.[Users](RoleID);
 GO
 
--- 2.4. Bảng Tours
+-- 2.4. Bảng Promotion (Di chuyển lên TRƯỚC Tours để tránh lỗi Foreign Key)
+-- 1 Promotion có thể áp dụng cho NHIỀU Tours
+CREATE TABLE dbo.Promotion (
+    PromotionID INT IDENTITY(1,1) PRIMARY KEY,
+    PromotionName NVARCHAR(150) NOT NULL,
+    [Percent] DECIMAL(5,2)  NOT NULL 
+            CONSTRAINT CK_Promo_Pct CHECK ([Percent] > 0 AND [Percent] <= 100),  -- 0 - 100%
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    CONSTRAINT CK_Promo_DateRange CHECK (EndDate >= StartDate)
+);
+GO
+
+-- 2.5. Bảng Tours
 CREATE TABLE dbo.Tours (
     TourID INT IDENTITY(1,1) PRIMARY KEY,
     TourName NVARCHAR(50),
@@ -64,14 +77,18 @@ CREATE TABLE dbo.Tours (
     TouristDestination NVARCHAR(120) NOT NULL, -- địa điểm sẽ đến du lịch
     TourTypesID INT NOT NULL 
                     CONSTRAINT FK_Tours_TourTypes REFERENCES dbo.TourTypes(TourTypeID),
+    PromotionID INT NULL  -- 1 Tour chỉ có 1 Promotion (hoặc NULL nếu không có)
+                    CONSTRAINT FK_Tours_Promotion REFERENCES dbo.Promotion(PromotionID)
+                    ON DELETE SET NULL  -- Nếu xóa Promotion, set Tours.PromotionID = NULL
 );
 GO
 
 -- index cho tìm kiếm nhanh
 CREATE INDEX IX_Tours_TouristDestination ON dbo.Tours(TouristDestination);
+CREATE INDEX IX_Tours_PromotionID ON dbo.Tours(PromotionID); -- Index cho join với Promotion
 GO
 
--- 2.5. Bảng TourDeparture
+-- 2.6. Bảng TourDeparture
 CREATE TABLE dbo.TourDeparture ( -- lịch khởi hành của mỗi tour vì 1 tour có các ngày khởi hành khác nhau
     TourDepartureID INT IDENTITY(1,1) PRIMARY KEY,
     TourID INT NOT NULL
@@ -116,25 +133,10 @@ CREATE TABLE dbo.TourDeparture_TourGuide (
 );
 GO
 
--- 2.10. Bảng Promotion
-CREATE TABLE dbo.Promotion (
-    PromotionID INT IDENTITY(1,1) PRIMARY KEY,
-    PromotionName NVARCHAR(150) NOT NULL,
-    [Percent] DECIMAL(5,2)  NOT NULL 
-            CONSTRAINT CK_Promo_Pct CHECK ([Percent] > 0 AND [Percent] <= 100),  -- 0 - 100%
-    StartDate DATE NOT NULL,
-    EndDate DATE NOT NULL,
-    CONSTRAINT CK_Promo_DateRange CHECK (EndDate >= StartDate)
-);
-GO
-
--- 2.11. Bảng quan hệ Tours và Promotion
-CREATE TABLE dbo.Tours_Promotion (
-    TourID       INT NOT NULL CONSTRAINT FK_TP_Tour  REFERENCES dbo.Tours(TourID),
-    PromotionID  INT NOT NULL CONSTRAINT FK_TP_Promo REFERENCES dbo.Promotion(PromotionID),
-    PRIMARY KEY (TourID, PromotionID)
-);
-GO
+-- ❌ ĐÃ XÓA: Bảng Tours_Promotion (không còn dùng)
+-- ✅ THAY VÀO: Cột PromotionID trong bảng Tours
+-- Mối quan hệ mới: One-to-Many (1 Promotion → Nhiều Tours)
+-- 1 Tour chỉ có CHỈ 1 Promotion (hoặc NULL)
 
 -- 2.12. Bảng Booking 
 CREATE TABLE dbo.Booking (
@@ -186,14 +188,21 @@ GO
 -- 3.4 Bảng Tour Guide
 
 
--- 3.4. Bảng Tours
-INSERT INTO dbo.Tours (TourName, [Description], TouristDestination, TourTypesID) VALUES
-(N'Khám phá Vịnh Hạ Long', N'Du thuyền qua các hòn đảo đá vôi.', N'Quảng Ninh', 1), -- TourID=1
-(N'Hành trình di sản miền Trung', N'Tham quan cố đô Huế, Hội An.', N'Huế, Đà Nẵng', 2), -- TourID=2
-(N'Trekking đỉnh Fansipan', N'Chinh phục nóc nhà Đông Dương.', N'Lào Cai', 3); -- TourID=3
+-- 3.4. Bảng Promotion (Phải insert TRƯỚC Tours vì Tours có FK đến Promotion)
+INSERT INTO dbo.Promotion (PromotionName, [Percent], StartDate, EndDate) VALUES
+(N'Ưu đãi hè sớm 10%', 10.00, DATEADD(day, -7, GETDATE()), DATEADD(day, 30, GETDATE())), -- PromoID=1 (Active)
+(N'Giảm giá chớp nhoáng 20%', 20.00, DATEADD(day, -1, GETDATE()), DATEADD(day, 3, GETDATE())), -- PromoID=2 (Active)
+(N'Ưu đãi đã hết hạn', 5.00, DATEADD(month, -1, GETDATE()), DATEADD(day, -7, GETDATE())); -- PromoID=3 (Expired)
 GO
 
--- 3.5. Bảng TourDeparture
+-- 3.5. Bảng Tours (với PromotionID)
+INSERT INTO dbo.Tours (TourName, [Description], TouristDestination, TourTypesID, PromotionID) VALUES
+(N'Khám phá Vịnh Hạ Long', N'Du thuyền qua các hòn đảo đá vôi.', N'Quảng Ninh', 1, 1), -- TourID=1, có KM 10%
+(N'Hành trình di sản miền Trung', N'Tham quan cố đô Huế, Hội An.', N'Huế, Đà Nẵng', 2, NULL), -- TourID=2, KHÔNG có KM
+(N'Trekking đỉnh Fansipan', N'Chinh phục nóc nhà Đông Dương.', N'Lào Cai', 3, 2); -- TourID=3, có KM 20%
+GO
+
+-- 3.6. Bảng TourDeparture
 DECLARE @Today DATE = CAST(GETDATE() AS DATE);
 INSERT INTO dbo.TourDeparture (TourID, DayNum, OriginalPrice, DepartureLocation, DepartureTime, ReturnTime, DateCreated, MaxQuantity)
 VALUES
@@ -203,19 +212,10 @@ VALUES
 (2, 6, 9200000.00, N'TP. Hồ Chí Minh', DATEADD(day, 21, @Today), DATEADD(day, 26, @Today), @Today, 20), -- đổi ngày
 (3, 4, 3800000.00, N'Hà Nội', DATEADD(day, 25, @Today), DATEADD(day, 29, @Today), @Today, 15),
 (3, 7, 4800000.00, N'Hà Nội', DATEADD(day, 30, @Today), DATEADD(day, 35, @Today), @Today, 15);
-
--- 3.6. Bảng Promotion
-INSERT INTO dbo.Promotion (PromotionName, [Percent], StartDate, EndDate) VALUES
-(N'Ưu đãi hè sớm 10%', 10.00, DATEADD(day, -7, GETDATE()), DATEADD(day, 30, GETDATE())), -- PromoID=1 (Active)
-(N'Giảm giá chớp nhoáng 20%', 20.00, DATEADD(day, -1, GETDATE()), DATEADD(day, 3, GETDATE())), -- PromoID=2 (Active)
-(N'Ưu đãi đã hết hạn', 5.00, DATEADD(month, -1, GETDATE()), DATEADD(day, -7, GETDATE())); -- PromoID=3 (Expired)
 GO
 
--- 3.7. Bảng Tours_Promotion
-INSERT INTO dbo.Tours_Promotion (TourID, PromotionID) VALUES
-(1, 1), -- Tour Hạ Long áp dụng KM 1 (10%)
-(3, 2); -- Tour Fansipan áp dụng KM 2 (20%)
-GO
+-- ❌ ĐÃ XÓA: Bảng Tours_Promotion không còn tồn tại
+-- ✅ Promotion giờ được lưu trực tiếp trong Tours.PromotionID
 
 -- 3.8. Dữ liệu Booking ban đầu (Đảm bảo TotalBooked < MaxQuantity)
 -- Đặt 5 chỗ cho TourDepID 3 (Fansipan, Max 15)
@@ -289,11 +289,12 @@ BEGIN
     IF @p_PromotionCodeID IS NOT NULL
     BEGIN
         -- Lấy % Khuyến mãi hợp lệ cho Tour và thời điểm hiện tại
+        -- ✅ CẬP NHẬT: Join trực tiếp qua Tours.PromotionID (không cần Tours_Promotion)
         SELECT @PromotionPercent = P.[Percent]
         FROM dbo.Promotion P
-        INNER JOIN dbo.Tours_Promotion TP ON P.PromotionID = TP.PromotionID
+        INNER JOIN dbo.Tours T ON P.PromotionID = T.PromotionID
         WHERE P.PromotionID = @p_PromotionCodeID
-          AND TP.TourID = @TourID
+          AND T.TourID = @TourID
           AND P.StartDate <= GETDATE()
           AND P.EndDate >= GETDATE();
         

@@ -94,11 +94,42 @@ public class TourController {
     /**
      * Create a new tour (Admin only)
      * POST /api/tours
+     * Note: Promotion is now a direct field in Tour entity
+     * - 1 Promotion can be applied to MANY Tours
+     * - 1 Tour can have ONLY 1 Promotion (or NULL)
      */
     @PostMapping
-    public ResponseEntity<?> createTour(@RequestBody Tour tour) {
+    public ResponseEntity<?> createTour(@RequestBody Map<String, Object> tourData) {
         try {
+            // Create tour entity
+            Tour tour = new Tour();
+            tour.setTourName((String) tourData.get("tourName"));
+            tour.setDescription((String) tourData.get("description"));
+            tour.setTouristDestination((String) tourData.get("touristDestination"));
+            
+            // Set tour type
+            if (tourData.containsKey("tourType")) {
+                Map<String, Object> tourTypeData = (Map<String, Object>) tourData.get("tourType");
+                if (tourTypeData != null && tourTypeData.containsKey("tourTypeID")) {
+                    Integer tourTypeID = (Integer) tourTypeData.get("tourTypeID");
+                    com.example.travel.entity.TourType tourType = new com.example.travel.entity.TourType(tourTypeID);
+                    tour.setTourType(tourType);
+                }
+            }
+            
+            // ✅ ĐƠN GIẢN: Set promotion trực tiếp vào tour entity
+            if (tourData.containsKey("promotion") && tourData.get("promotion") != null) {
+                Map<String, Object> promotionData = (Map<String, Object>) tourData.get("promotion");
+                if (promotionData.containsKey("promotionID")) {
+                    Integer promotionID = (Integer) promotionData.get("promotionID");
+                    com.example.travel.entity.Promotion promotion = new com.example.travel.entity.Promotion(promotionID);
+                    tour.setPromotion(promotion);
+                }
+            }
+            
+            // Save tour (JPA tự động xử lý promotion)
             Tour savedTour = tourRepository.save(tour);
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Tour created successfully");
@@ -115,27 +146,56 @@ public class TourController {
     /**
      * Update an existing tour (Admin only)
      * PUT /api/tours/{id}
+     * 
+     * Promotion Logic (SIMPLIFIED):
+     * - 1 Promotion CÓ THỂ áp dụng cho NHIỀU Tours
+     * - 1 Tour CHỈ CÓ 1 Promotion tại một thời điểm
+     * - Khi update: Simply set tour.setPromotion(new) or tour.setPromotion(null)
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTour(@PathVariable Integer id, @RequestBody Tour tour) {
+    public ResponseEntity<?> updateTour(@PathVariable Integer id, @RequestBody Map<String, Object> tourData) {
         try {
             Tour existingTour = tourRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Tour not found with ID: " + id));
             
-            // Update fields
-            if (tour.getTourName() != null) {
-                existingTour.setTourName(tour.getTourName());
+            // Update basic fields
+            if (tourData.containsKey("tourName")) {
+                existingTour.setTourName((String) tourData.get("tourName"));
             }
-            if (tour.getDescription() != null) {
-                existingTour.setDescription(tour.getDescription());
+            if (tourData.containsKey("description")) {
+                existingTour.setDescription((String) tourData.get("description"));
             }
-            if (tour.getTouristDestination() != null) {
-                existingTour.setTouristDestination(tour.getTouristDestination());
+            if (tourData.containsKey("touristDestination")) {
+                existingTour.setTouristDestination((String) tourData.get("touristDestination"));
             }
-            if (tour.getTourType() != null) {
-                existingTour.setTourType(tour.getTourType());
+            if (tourData.containsKey("tourType")) {
+                Map<String, Object> tourTypeData = (Map<String, Object>) tourData.get("tourType");
+                if (tourTypeData != null && tourTypeData.containsKey("tourTypeID")) {
+                    Integer tourTypeID = (Integer) tourTypeData.get("tourTypeID");
+                    com.example.travel.entity.TourType tourType = new com.example.travel.entity.TourType(tourTypeID);
+                    existingTour.setTourType(tourType);
+                }
             }
             
+            // ✅ ĐƠN GIẢN HÓA: Update promotion trực tiếp
+            if (tourData.containsKey("promotion")) {
+                Object promotionObj = tourData.get("promotion");
+                
+                if (promotionObj != null) {
+                    // Set promotion mới
+                    Map<String, Object> promotionData = (Map<String, Object>) promotionObj;
+                    if (promotionData.containsKey("promotionID")) {
+                        Integer promotionID = (Integer) promotionData.get("promotionID");
+                        com.example.travel.entity.Promotion promotion = new com.example.travel.entity.Promotion(promotionID);
+                        existingTour.setPromotion(promotion);
+                    }
+                } else {
+                    // Set promotion = null (xóa promotion)
+                    existingTour.setPromotion(null);
+                }
+            }
+            
+            // Save tour (JPA tự động update promotion)
             Tour updatedTour = tourRepository.save(existingTour);
             
             Map<String, Object> response = new HashMap<>();

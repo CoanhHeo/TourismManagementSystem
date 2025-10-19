@@ -18,11 +18,12 @@ public interface PromotionRepository extends JpaRepository<Promotion, Integer> {
     List<Promotion> findActivePromotions(@Param("currentDate") LocalDate currentDate);
     
     /**
-     * Find active promotion for a specific tour
+     * ✅ CẬP NHẬT: Find active promotion for a specific tour
+     * Join trực tiếp qua Tours.PromotionID (không cần Tours_Promotion)
      */
     @Query(value = "SELECT p.* FROM Promotion p " +
-           "INNER JOIN Tours_Promotion tp ON p.PromotionID = tp.PromotionID " +
-           "WHERE tp.TourID = :tourID " +
+           "INNER JOIN Tours t ON p.PromotionID = t.PromotionID " +
+           "WHERE t.TourID = :tourID " +
            "AND p.StartDate <= :currentDate " +
            "AND p.EndDate >= :currentDate", 
            nativeQuery = true)

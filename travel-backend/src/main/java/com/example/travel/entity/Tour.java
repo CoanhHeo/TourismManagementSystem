@@ -23,6 +23,10 @@ public class Tour {
     @JoinColumn(name = "TourTypesID", nullable = false)
     private TourType tourType;
 
+    @ManyToOne
+    @JoinColumn(name = "PromotionID", nullable = true)
+    private Promotion promotion;
+
     // Constructors
     public Tour() {
     }
@@ -70,5 +74,13 @@ public class Tour {
 
     public void setTourType(TourType tourType) {
         this.tourType = tourType;
+    }
+
+    public Promotion getPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
     }
 }
