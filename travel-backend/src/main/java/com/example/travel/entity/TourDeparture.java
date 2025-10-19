@@ -38,6 +38,10 @@ public class TourDeparture {
     @Column(name = "MaxQuantity", nullable = false)
     private Integer maxQuantity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TourGuideID", nullable = true) // nullable - guide assignment is optional
+    private TourGuide tourGuide;
+
     // PrePersist: gọi phương thức này trước khi entity được lưu lần đầu tiên vào database -> thiết lập giá trị mặc định cho trường dateCreated
     @PrePersist
     protected void onCreate() {
@@ -125,5 +129,13 @@ public class TourDeparture {
 
     public void setMaxQuantity(Integer maxQuantity) {
         this.maxQuantity = maxQuantity;
+    }
+
+    public TourGuide getTourGuide() {
+        return tourGuide;
+    }
+
+    public void setTourGuide(TourGuide tourGuide) {
+        this.tourGuide = tourGuide;
     }
 }

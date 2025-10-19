@@ -821,8 +821,12 @@ export class LoginComponent implements OnInit {
         // Handle both string and object role formats
         const roleName = typeof user.role === 'string' ? user.role : user.role?.roleName;
         const isAdmin = roleName === 'ADMIN' || roleName === 'Admin';
+        const isTourGuide = roleName === 'Tour Guide' || roleName === 'TOUR_GUIDE';
+        
         if (isAdmin) {
           this.router.navigate(['/admin']);
+        } else if (isTourGuide) {
+          this.router.navigate(['/tour-guide/dashboard']);
         } else {
           this.router.navigate(['/tours']);
         }
@@ -856,11 +860,14 @@ export class LoginComponent implements OnInit {
         // Handle both string and object role formats
         const roleName = typeof user?.role === 'string' ? user.role : user?.role?.roleName;
         const isAdmin = roleName === 'ADMIN' || roleName === 'Admin';
+        const isTourGuide = roleName === 'Tour Guide' || roleName === 'TOUR_GUIDE';
         
         // Redirect based on role
         setTimeout(() => {
           if (isAdmin) {
             this.router.navigate(['/admin']);
+          } else if (isTourGuide) {
+            this.router.navigate(['/tour-guide/dashboard']);
           } else {
             this.router.navigate(['/tours']);
           }

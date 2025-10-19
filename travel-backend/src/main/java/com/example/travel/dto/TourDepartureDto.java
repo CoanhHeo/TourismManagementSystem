@@ -16,6 +16,37 @@ public class TourDepartureDto {
     private Integer maxQuantity;
     private Integer availableSlots;
     private PromotionDto promotion; // Add promotion information
+    private TourGuideDto tourGuide; // 🎯 Add tour guide information
+
+    // Inner DTO class for TourGuide
+    public static class TourGuideDto {
+        private Integer tourGuideID;
+        private Integer userID;
+        private String fullname;
+        private String email;
+        private Double rating;
+        private String languages;
+
+        public TourGuideDto() {}
+
+        public Integer getTourGuideID() { return tourGuideID; }
+        public void setTourGuideID(Integer tourGuideID) { this.tourGuideID = tourGuideID; }
+
+        public Integer getUserID() { return userID; }
+        public void setUserID(Integer userID) { this.userID = userID; }
+
+        public String getFullname() { return fullname; }
+        public void setFullname(String fullname) { this.fullname = fullname; }
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+
+        public Double getRating() { return rating; }
+        public void setRating(Double rating) { this.rating = rating; }
+
+        public String getLanguages() { return languages; }
+        public void setLanguages(String languages) { this.languages = languages; }
+    }
 
     // Constructors
     public TourDepartureDto() {
@@ -116,5 +147,13 @@ public class TourDepartureDto {
 
     public void setPromotion(PromotionDto promotion) {
         this.promotion = promotion;
+    }
+
+    public TourGuideDto getTourGuide() {
+        return tourGuide;
+    }
+
+    public void setTourGuide(TourGuideDto tourGuide) {
+        this.tourGuide = tourGuide;
     }
 }

@@ -45,7 +45,13 @@ export class DangkyService {
    * Get all bookings for a customer
    */
   getCustomerBookings(customerId: number): Observable<any> {
-    return this.http.get<any>(`${this.base}/user/${customerId}`);  // Changed from /customer/ to /user/
+    return this.http.get<any>(`${this.base}/user/${customerId}`).pipe(
+      map(bookings => ({
+        success: true,
+        data: bookings,
+        total: bookings.length
+      }))
+    );
   }
   
   /**

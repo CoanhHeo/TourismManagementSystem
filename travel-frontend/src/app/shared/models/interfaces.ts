@@ -15,7 +15,7 @@ export interface KhachHang {
     roleID: number;
     roleName: string;
   };
-  createDate?: string;
+  dateCreated?: string;
   
   // Old schema fields (for backward compatibility)
   idKhachHang?: number;
@@ -70,6 +70,16 @@ export interface TourDeparture {
   maxQuantity: number;
   availableSlots?: number;
   promotion?: Promotion; // Active promotion for this tour
+  tourGuide?: TourGuide; // Tour guide information
+}
+
+export interface TourGuide {
+  tourGuideID: number;
+  userID: number;
+  fullname: string;
+  email?: string;
+  rating?: number;
+  languages?: string;
 }
 
 export interface Promotion {

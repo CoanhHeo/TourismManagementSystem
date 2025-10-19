@@ -29,4 +29,17 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Double calculateTotalRevenue();
     
     long countByPaymentStatus(String paymentStatus);
+    
+    // Count bookings by user ID (for checking before deletion)
+    long countByUser_UserID(Integer userID);
+    
+    /**
+     * 🎯 NEW: Query methods for Tour Guide to view passengers
+     */
+    
+    // Get bookings by departure and payment status (e.g., only PAID bookings = confirmed passengers)
+    List<Booking> findByTourDeparture_TourDepartureIDAndPaymentStatus(Integer tourDepartureID, String paymentStatus);
+    
+    // Get bookings by departure ordered by booking date
+    List<Booking> findByTourDeparture_TourDepartureIDOrderByBookingDateDesc(Integer tourDepartureID);
 }

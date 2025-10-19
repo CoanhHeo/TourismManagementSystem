@@ -3,6 +3,7 @@ import { DangkyFormComponent } from '../features/dangky/dangky-form/dangky-form.
 import { TourListComponent } from '../features/tour/tour-list/tour-list.component';
 import { TourBookingComponent } from '../features/tour/tour-booking/tour-booking.component';
 import { MyBookingsComponent } from '../features/tour/my-bookings/my-bookings.component';
+import { MyToursComponent } from '../features/tour/my-tours/my-tours.component';
 import { RegisterComponent } from '../features/auth/register/register.component';
 import { LoginComponent } from '../features/auth/login/login.component';
 import { AdminDashboardComponent } from '../features/admin/admin-dashboard/admin-dashboard.component';
@@ -12,7 +13,11 @@ import { ManageToursComponent } from '../features/admin/manage-tours/manage-tour
 import { EditTourComponent } from '../features/admin/edit-tour/edit-tour.component';
 import { ManageTourDeparturesComponent } from '../features/admin/manage-tour-departures/manage-tour-departures.component';
 import { EditTourDepartureComponent } from '../features/admin/edit-tour-departure/edit-tour-departure.component';
+import { ManageUsersComponent } from '../features/admin/manage-users/manage-users.component';
 import { adminGuard } from './core/guards/admin.guard';
+import { tourGuideGuard } from './core/guards/tour-guide.guard';
+import { TourGuideDashboardComponent } from '../features/tour-guide/dashboard/tour-guide-dashboard.component';
+import { PassengersListComponent } from '../features/tour-guide/passengers/passengers-list.component';
 
 export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
@@ -20,7 +25,8 @@ export const routes: Routes = [
   { path: 'dangky', component: DangkyFormComponent },
   { path: 'tours', component: TourListComponent },
   { path: 'tours/:id/book', component: TourBookingComponent },
-  { path: 'my-bookings', component: MyBookingsComponent },
+  { path: 'my-bookings', component: MyBookingsComponent }, // Old route (keep for compatibility)
+  { path: 'my-tours', component: MyToursComponent }, // New route
   { 
     path: 'admin', 
     component: AdminDashboardComponent,
@@ -55,6 +61,22 @@ export const routes: Routes = [
     path: 'admin/departures/edit/:id', 
     component: EditTourDepartureComponent,
     canActivate: [adminGuard]
+  },
+  { 
+    path: 'admin/users', 
+    component: ManageUsersComponent,
+    canActivate: [adminGuard]
+  },
+  // 🎯 NEW: Tour Guide Routes
+  { 
+    path: 'tour-guide/dashboard', 
+    component: TourGuideDashboardComponent,
+    canActivate: [tourGuideGuard]
+  },
+  { 
+    path: 'tour-guide/passengers/:departureId', 
+    component: PassengersListComponent,
+    canActivate: [tourGuideGuard]
   },
   { path: '', pathMatch: 'full', redirectTo: 'tours' },
   { path: '**', redirectTo: 'tours' }

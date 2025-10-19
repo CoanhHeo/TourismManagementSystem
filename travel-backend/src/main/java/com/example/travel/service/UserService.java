@@ -49,7 +49,7 @@ public class UserService {
         user.setAge(registrationDto.getAge());
         user.setAddress(registrationDto.getAddress());
         user.setRole(customerRole);
-        user.setCreateDate(LocalDateTime.now());
+        user.setDateCreated(LocalDateTime.now());
 
         return userRepository.save(user);
     }

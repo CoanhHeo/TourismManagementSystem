@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -130,6 +131,8 @@ public class BookingService {
         dto.setBookingID(booking.getBookingID());
         dto.setUserID(booking.getUser().getUserID());
         dto.setUserFullname(booking.getUser().getFullname());
+        dto.setEmail(booking.getUser().getEmail());
+        dto.setPhoneNumber(booking.getUser().getPhoneNumber());
         dto.setTourDepartureID(booking.getTourDeparture().getTourDepartureID());
         dto.setTourName(booking.getTourDeparture().getTour().getTourName());
         dto.setQuantity(booking.getQuantity());
@@ -139,6 +142,53 @@ public class BookingService {
         dto.setPaymentStatus(booking.getPaymentStatus());
         dto.setBookingDate(booking.getBookingDate());
         dto.setDepartureTime(booking.getTourDeparture().getDepartureTime());
+        
+        // Add tour guide information
+        if (booking.getTourDeparture().getTourGuide() != null) {
+            dto.setGuideFullname(booking.getTourDeparture().getTourGuide().getUser().getFullname());
+            BigDecimal rating = booking.getTourDeparture().getTourGuide().getRating();
+            dto.setGuideRating(rating != null ? rating.doubleValue() : null);
+            dto.setGuideLanguages(booking.getTourDeparture().getTourGuide().getLanguages());
+        }
+        
         return dto;
+    }
+
+    /**
+     * 🎯 NEW: Get all passengers (bookings) for a specific tour departure
+     * This will be used by tour guides to see who is joining their tour
+     */
+    public List<BookingResponseDto> getPassengersByDeparture(Integer tourDepartureId) {
+        // Only get confirmed bookings (PAID status)
+        List<Booking> bookings = bookingRepository.findByTourDeparture_TourDepartureIDAndPaymentStatus(
+                tourDepartureId, "PAID");
+        
+        return bookings.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 🎯 NEW: Get all bookings for a departure (including pending)
+     * For comprehensive view by tour guide
+     */
+    public List<BookingResponseDto> getAllBookingsByDeparture(Integer tourDepartureId) {
+        List<Booking> bookings = bookingRepository.findByTourDeparture_TourDepartureID(tourDepartureId);
+        
+        return bookings.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 🎯 NEW: Count total passengers for a departure
+     */
+    public Integer getTotalPassengerCount(Integer tourDepartureId) {
+        List<Booking> paidBookings = bookingRepository.findByTourDeparture_TourDepartureIDAndPaymentStatus(
+                tourDepartureId, "PAID");
+        
+        return paidBookings.stream()
+                .mapToInt(Booking::getQuantity)
+                .sum();
     }
 }

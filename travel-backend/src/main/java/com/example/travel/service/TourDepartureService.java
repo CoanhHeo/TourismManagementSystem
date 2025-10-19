@@ -116,6 +116,20 @@ public class TourDepartureService {
             dto.setPromotion(promotionDto);
         }
         
+        // 🎯 Add TourGuide information if assigned
+        if (departure.getTourGuide() != null) {
+            TourDepartureDto.TourGuideDto guideDto = new TourDepartureDto.TourGuideDto();
+            guideDto.setTourGuideID(departure.getTourGuide().getTourGuideID());
+            guideDto.setUserID(departure.getTourGuide().getUser().getUserID());
+            guideDto.setFullname(departure.getTourGuide().getUser().getFullname());
+            guideDto.setEmail(departure.getTourGuide().getUser().getEmail());
+            guideDto.setRating(departure.getTourGuide().getRating() != null 
+                ? departure.getTourGuide().getRating().doubleValue() 
+                : null);
+            guideDto.setLanguages(departure.getTourGuide().getLanguages());
+            dto.setTourGuide(guideDto);
+        }
+        
         return dto;
     }
 }

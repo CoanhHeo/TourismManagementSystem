@@ -32,8 +32,11 @@ public class User {
     @Column(name = "Address", length = 100)
     private String address;
 
-    @Column(name = "CreateDate")
-    private LocalDateTime createDate;
+    @Column(name = "DateCreated")
+    private LocalDateTime dateCreated;
+
+    @Column(name = "IsActive", nullable = false)
+    private Boolean isActive = true; // Default to active
 
     @ManyToOne
     @JoinColumn(name = "RoleID", nullable = false)
@@ -41,7 +44,8 @@ public class User {
 
     // Constructors
     public User() {
-        this.createDate = LocalDateTime.now();
+        this.dateCreated = LocalDateTime.now();
+        this.isActive = true; // Default active when creating new user
     }
 
     public User(Integer userID) {
@@ -113,12 +117,20 @@ public class User {
         this.address = address;
     }
 
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+    public void setDateCreated(LocalDateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public Role getRole() {

@@ -12,6 +12,16 @@ interface Tour {
   touristDestination?: string;
 }
 
+interface TourGuide {
+  tourGuideID: number;
+  userID: number;
+  fullname: string;
+  email: string;
+  phoneNumber?: string;
+  rating?: number;
+  languages?: string;
+}
+
 interface TourDepartureForm {
   tour: {
     tourID: number;
@@ -181,6 +191,46 @@ interface TourDepartureForm {
                   placeholder="VD: 30"
                 >
               </div>
+
+              <!-- 🎯 Tour Guides Selection (NEW) -->
+              <div class="form-group full-width">
+                <label class="form-label">
+                  <i class="icon">🎯</i>
+                  Chỉ định Hướng Dẫn Viên (Tùy chọn - chỉ được chọn 1 người)
+                </label>
+                <div class="guides-loading" *ngIf="loadingGuides">
+                  <span class="spinner-small"></span>
+                  Đang tải danh sách hướng dẫn viên...
+                </div>
+                <div class="guides-selection" *ngIf="!loadingGuides && availableGuides.length > 0">
+                  <div class="guides-grid">
+                    <div 
+                      *ngFor="let guide of availableGuides" 
+                      class="guide-radio-item"
+                      [class.selected]="isGuideSelected(guide.tourGuideID)"
+                      (click)="selectGuide(guide.tourGuideID)">
+                      <input 
+                        type="radio" 
+                        name="selectedGuide"
+                        [checked]="isGuideSelected(guide.tourGuideID)"
+                        (click)="$event.stopPropagation()">
+                      <div class="guide-info-compact">
+                        <div class="guide-name">{{ guide.fullname }}</div>
+                        <div class="guide-details">
+                          <span class="guide-rating" *ngIf="guide.rating">⭐ {{ guide.rating }}</span>
+                          <span class="guide-lang" *ngIf="guide.languages">🌐 {{ guide.languages }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <small class="hint" *ngIf="selectedGuideId">
+                    ✓ Đã chọn hướng dẫn viên: {{ getSelectedGuideName() }}
+                  </small>
+                </div>
+                <div class="no-guides" *ngIf="!loadingGuides && availableGuides.length === 0">
+                  ⚠️ Không có hướng dẫn viên nào khả dụng
+                </div>
+              </div>
             </div>
 
             <!-- Preview Section -->
@@ -213,6 +263,14 @@ interface TourDepartureForm {
                 <div class="preview-item" *ngIf="formData.returnTime">
                   <span class="preview-label">Kết thúc:</span>
                   <span class="preview-value">{{ formatDateTime(formData.returnTime) }}</span>
+                </div>
+                <div class="preview-item" *ngIf="selectedGuideId">
+                  <span class="preview-label">Hướng dẫn viên:</span>
+                  <span class="preview-value">👤 {{ getSelectedGuideName() }}</span>
+                </div>
+                <div class="preview-item" *ngIf="!selectedGuideId">
+                  <span class="preview-label">Hướng dẫn viên:</span>
+                  <span class="preview-value" style="color: #f39c12;">⚠️ Chưa chọn</span>
                 </div>
               </div>
             </div>
@@ -514,8 +572,111 @@ interface TourDepartureForm {
       font-size: 20px;
     }
 
+    /* 🎯 Tour Guides Selection Styles */
+    .guides-loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .spinner-small {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    .guides-selection {
+      margin-top: 8px;
+    }
+
+    .guides-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .guide-radio-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .guide-radio-item:hover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .guide-radio-item.selected {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .guide-radio-item input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .guide-info-compact {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .guide-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .guide-details {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .guide-rating {
+      color: #f39c12;
+    }
+
+    .guide-lang {
+      color: #3498db;
+    }
+
+    .no-guides {
+      padding: 20px;
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
     @media (max-width: 768px) {
       .form-grid, .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .guides-grid {
         grid-template-columns: 1fr;
       }
 
@@ -544,6 +705,9 @@ export class AddTourDepartureComponent implements OnInit {
   };
 
   tours: Tour[] = [];
+  availableGuides: TourGuide[] = []; // 🎯 Danh sách guides
+  selectedGuideId: number | null = null; // 🎯 Single guide selection
+  loadingGuides = false; // 🎯 Loading state
   submitting = false;
 
   constructor(
@@ -554,6 +718,7 @@ export class AddTourDepartureComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTours();
+    this.loadAvailableGuides(); // 🎯 Load guides khi init
   }
 
   loadTours(): void {
@@ -566,6 +731,47 @@ export class AddTourDepartureComponent implements OnInit {
         this.toastService.error('Không thể tải danh sách tour');
       }
     });
+  }
+
+  /**
+   * 🎯 Load danh sách Tour Guides available (role Tour Guide + active)
+   */
+  loadAvailableGuides(): void {
+    this.loadingGuides = true;
+    this.http.get<TourGuide[]>(`${environment.apiUrl}/admin/tour-guides/active`).subscribe({
+      next: (guides) => {
+        this.availableGuides = guides;
+        this.loadingGuides = false;
+      },
+      error: (err) => {
+        console.error('Error loading guides:', err);
+        this.loadingGuides = false;
+        // Don't show error toast - guides are optional
+      }
+    });
+  }
+
+  /**
+   * 🎯 Select single guide (radio button logic)
+   */
+  selectGuide(guideId: number): void {
+    this.selectedGuideId = guideId;
+  }
+
+  /**
+   * 🎯 Check if guide is selected
+   */
+  isGuideSelected(guideId: number): boolean {
+    return this.selectedGuideId === guideId;
+  }
+
+  /**
+   * 🎯 Get selected guide name for display
+   */
+  getSelectedGuideName(): string {
+    if (!this.selectedGuideId) return '';
+    const guide = this.availableGuides.find(g => g.tourGuideID === this.selectedGuideId);
+    return guide ? guide.fullname : '';
   }
 
   onTourChange(): void {
@@ -664,14 +870,18 @@ export class AddTourDepartureComponent implements OnInit {
         tourID: Number(this.formData.tour.tourID) // Convert to Number (ngModel trả về String)
       },
       departureTime: new Date(this.formData.departureTime).toISOString(),
-      returnTime: new Date(this.formData.returnTime).toISOString()
+      returnTime: new Date(this.formData.returnTime).toISOString(),
+      guideId: this.selectedGuideId // 🎯 Include selected guide (single)
     };
 
     this.http.post<any>(`${environment.apiUrl}/tour-departures`, payload).subscribe({
       next: (response) => {
         this.submitting = false;
         if (response.success) {
-          this.toastService.success('Thêm lịch khởi hành thành công!');
+          const guidesMsg = response.assignedGuide 
+            ? ' và phân công hướng dẫn viên thành công' 
+            : '';
+          this.toastService.success(`Thêm lịch khởi hành${guidesMsg} thành công!`);
           setTimeout(() => {
             this.router.navigate(['/admin']);
           }, 1500);

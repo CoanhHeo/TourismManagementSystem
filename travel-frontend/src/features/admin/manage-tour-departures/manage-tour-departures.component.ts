@@ -26,6 +26,14 @@ interface TourDepartureResponse {
   maxQuantity: number;
   availableSlots: number;
   promotion?: any;
+  tourGuide?: {
+    tourGuideID: number;
+    userID: number;
+    fullname: string;
+    email: string;
+    rating?: number;
+    languages?: string;
+  };
 }
 
 // Frontend model with transformed structure
@@ -40,6 +48,11 @@ interface TourDeparture {
   maxQuantity: number;
   currentBookings?: number;
   status?: 'upcoming' | 'ongoing' | 'completed';
+  tourGuide?: {
+    tourGuideID: number;
+    fullname: string;
+    rating?: number;
+  };
 }
 
 @Component({
@@ -169,6 +182,7 @@ interface TourDeparture {
                   <th>Kết thúc</th>
                   <th>Giá</th>
                   <th>Số chỗ</th>
+                  <th>Hướng dẫn viên</th>
                   <th>Trạng thái</th>
                   <th>Thao tác</th>
                 </tr>
@@ -215,6 +229,17 @@ interface TourDeparture {
                       ></div>
                     </div>
                   </td>
+                  <td class="guide-info">
+                    <div *ngIf="departure.tourGuide" class="guide-cell">
+                      <div class="guide-name">👤 {{ departure.tourGuide.fullname }}</div>
+                      <div class="guide-rating" *ngIf="departure.tourGuide.rating">
+                        ⭐ {{ departure.tourGuide.rating }}
+                      </div>
+                    </div>
+                    <div *ngIf="!departure.tourGuide" class="no-guide">
+                      <span class="unassigned-badge">⚠️ Chưa phân công</span>
+                    </div>
+                  </td>
                   <td class="status">
                     <span 
                       class="status-badge" 
@@ -246,7 +271,7 @@ interface TourDeparture {
                   </td>
                 </tr>
                 <tr *ngIf="filteredDepartures.length === 0" class="empty-row">
-                  <td colspan="10" class="empty-message">
+                  <td colspan="11" class="empty-message">
                     <i class="icon">📭</i>
                     <p>Không tìm thấy lịch khởi hành nào</p>
                   </td>
@@ -709,6 +734,41 @@ interface TourDeparture {
       background: linear-gradient(90deg, #f5576c 0%, #f093fb 100%);
     }
 
+    .guide-info {
+      min-width: 150px;
+    }
+
+    .guide-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .guide-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 13px;
+    }
+
+    .guide-rating {
+      font-size: 12px;
+      color: #f39c12;
+    }
+
+    .no-guide {
+      text-align: center;
+    }
+
+    .unassigned-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(243, 156, 18, 0.1);
+      color: #f39c12;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
     .status-badge {
       display: inline-block;
       padding: 6px 14px;
@@ -1069,7 +1129,12 @@ export class ManageTourDeparturesComponent implements OnInit {
           returnTime: r.returnTime,
           maxQuantity: r.maxQuantity,
           currentBookings: r.maxQuantity - r.availableSlots,
-          status: this.calculateStatus(r.departureTime, r.returnTime)
+          status: this.calculateStatus(r.departureTime, r.returnTime),
+          tourGuide: r.tourGuide ? {
+            tourGuideID: r.tourGuide.tourGuideID,
+            fullname: r.tourGuide.fullname,
+            rating: r.tourGuide.rating
+          } : undefined
         }));
         this.applyFilter();
         this.loading = false;

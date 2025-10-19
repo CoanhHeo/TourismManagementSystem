@@ -224,6 +224,27 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
                         <span class="info-value">{{ departure.dayNum }} ngày {{ departure.dayNum - 1 }} đêm</span>
                       </div>
                     </div>
+
+                    <div class="info-row" *ngIf="departure.tourGuide">
+                      <i class="info-icon">👨‍✈️</i>
+                      <div class="info-content">
+                        <span class="info-label">Hướng dẫn viên:</span>
+                        <span class="info-value guide-name">
+                          {{ departure.tourGuide.fullname }}
+                          <span class="guide-rating" *ngIf="departure.tourGuide.rating">
+                            ⭐ {{ departure.tourGuide.rating }}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="info-row" *ngIf="departure.tourGuide && departure.tourGuide.languages">
+                      <i class="info-icon">🗣️</i>
+                      <div class="info-content">
+                        <span class="info-label">Ngôn ngữ:</span>
+                        <span class="info-value">{{ departure.tourGuide.languages }}</span>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="departure-pricing">
@@ -1144,6 +1165,26 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
       font-size: 14px;
       color: #333;
       font-weight: 600;
+    }
+
+    .guide-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    .guide-rating {
+      font-size: 12px;
+      color: #ffa726;
+      font-weight: 600;
+      padding: 2px 8px;
+      background: #fff3e0;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
     }
 
     .departure-pricing {

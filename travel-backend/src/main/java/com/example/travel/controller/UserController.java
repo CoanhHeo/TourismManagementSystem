@@ -144,7 +144,7 @@ public class UserController {
         userMap.put("age", user.getAge());
         userMap.put("address", user.getAddress());
         userMap.put("role", user.getRole().getRoleName());
-        userMap.put("createDate", user.getCreateDate());
+        userMap.put("dateCreated", user.getDateCreated());
         return userMap;
     }
 }

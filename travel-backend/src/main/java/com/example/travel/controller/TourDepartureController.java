@@ -2,10 +2,10 @@ package com.example.travel.controller;
 
 import com.example.travel.dto.TourDepartureDto;
 import com.example.travel.entity.TourDeparture;
-import com.example.travel.entity.TourDepartureTourGuide;
+import com.example.travel.entity.TourGuide;
 import com.example.travel.service.TourDepartureService;
 import com.example.travel.repository.TourDepartureRepository;
-import com.example.travel.repository.TourDepartureTourGuideRepository;
+import com.example.travel.repository.TourGuideRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class TourDepartureController {
     private TourDepartureRepository tourDepartureRepository;
     
     @Autowired
-    private TourDepartureTourGuideRepository tourDepartureTourGuideRepository;
+    private TourGuideRepository tourGuideRepository;
 
     /**
      * Get all tour departures (Admin only)
@@ -113,17 +113,87 @@ public class TourDepartureController {
     /**
      * Create a new tour departure (Admin only)
      * POST /api/tour-departures
+     * Body: { ...tourDeparture, guideId: 1 } (optional - single guide)
      */
     @PostMapping
-    public ResponseEntity<?> createTourDeparture(@RequestBody TourDeparture tourDeparture) {
+    public ResponseEntity<?> createTourDeparture(@RequestBody Map<String, Object> payload) {
         try {
+            // Extract tour departure data
+            TourDeparture tourDeparture = new TourDeparture();
+            tourDeparture.setDayNum((Integer) payload.get("dayNum"));
+            tourDeparture.setOriginalPrice(new java.math.BigDecimal(payload.get("originalPrice").toString()));
+            tourDeparture.setDepartureLocation((String) payload.get("departureLocation"));
+            
+            // Parse ISO 8601 DateTime (supports both with/without timezone)
+            String departureTimeStr = (String) payload.get("departureTime");
+            String returnTimeStr = (String) payload.get("returnTime");
+            tourDeparture.setDepartureTime(parseDateTime(departureTimeStr));
+            tourDeparture.setReturnTime(parseDateTime(returnTimeStr));
+            
+            tourDeparture.setMaxQuantity((Integer) payload.get("maxQuantity"));
+            
+            // Set Tour
+            Map<String, Object> tourMap = (Map<String, Object>) payload.get("tour");
+            if (tourMap != null && tourMap.get("tourID") != null) {
+                com.example.travel.entity.Tour tour = new com.example.travel.entity.Tour();
+                tour.setTourID((Integer) tourMap.get("tourID"));
+                tourDeparture.setTour(tour);
+            }
+            
+            // 🎯 Assign single tour guide if provided
+            Integer guideId = (Integer) payload.get("guideId");
+            if (guideId != null) {
+                try {
+                    TourGuide guide = tourGuideRepository.findById(guideId).orElse(null);
+                    if (guide == null) {
+                        Map<String, Object> error = new HashMap<>();
+                        error.put("success", false);
+                        error.put("message", "Không tìm thấy hướng dẫn viên với ID: " + guideId);
+                        return ResponseEntity.status(404).body(error);
+                    }
+                    
+                    // ⚠️ CHECK DATE CONFLICT
+                    List<TourDeparture> conflicts = tourDepartureRepository.findConflictingSchedules(
+                        guideId,
+                        tourDeparture.getDepartureTime(),
+                        tourDeparture.getReturnTime()
+                    );
+                    
+                    if (!conflicts.isEmpty()) {
+                        TourDeparture conflict = conflicts.get(0);
+                        Map<String, Object> error = new HashMap<>();
+                        error.put("success", false);
+                        error.put("message", String.format(
+                            "Hướng dẫn viên này đã được phân công cho lịch trình khác (ID: %d) từ %s đến %s. Vui lòng chọn hướng dẫn viên khác hoặc thay đổi thời gian.",
+                            conflict.getTourDepartureID(),
+                            conflict.getDepartureTime().toLocalDate(),
+                            conflict.getReturnTime().toLocalDate()
+                        ));
+                        error.put("conflictingDepartureId", conflict.getTourDepartureID());
+                        return ResponseEntity.status(409).body(error); // 409 Conflict
+                    }
+                    
+                    tourDeparture.setTourGuide(guide);
+                } catch (Exception e) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("success", false);
+                    error.put("message", "Lỗi khi phân công hướng dẫn viên: " + e.getMessage());
+                    return ResponseEntity.status(500).body(error);
+                }
+            }
+            
+            // Save departure with assigned guide
             TourDeparture savedDeparture = tourDepartureRepository.save(tourDeparture);
+            
             TourDepartureDto dto = tourDepartureService.getDepartureWithAvailability(savedDeparture.getTourDepartureID());
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Tour departure created successfully");
+            response.put("message", guideId != null 
+                ? "Lịch khởi hành đã được tạo và phân công hướng dẫn viên thành công"
+                : "Lịch khởi hành đã được tạo thành công");
             response.put("data", dto);
+            response.put("assignedGuide", guideId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
@@ -189,17 +259,49 @@ public class TourDepartureController {
     @PutMapping("/{id}/assign-guide/{guideId}")
     public ResponseEntity<?> assignTourGuide(@PathVariable Integer id, @PathVariable Integer guideId) {
         try {
-            // Check if departure exists
-            if (!tourDepartureRepository.existsById(id)) {
+            // Find departure
+            TourDeparture departure = tourDepartureRepository.findById(id).orElse(null);
+            if (departure == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("success", false);
                 error.put("message", "Tour departure not found with ID: " + id);
                 return ResponseEntity.status(404).body(error);
             }
             
-            // Create assignment in junction table
-            TourDepartureTourGuide assignment = new TourDepartureTourGuide(id, guideId);
-            tourDepartureTourGuideRepository.save(assignment);
+            // Find guide
+            TourGuide guide = tourGuideRepository.findById(guideId).orElse(null);
+            if (guide == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", "Tour guide not found with ID: " + guideId);
+                return ResponseEntity.status(404).body(error);
+            }
+            
+            // ⚠️ CHECK DATE CONFLICT (exclude current departure)
+            List<TourDeparture> conflicts = tourDepartureRepository.findConflictingSchedulesExcluding(
+                guideId,
+                id, // exclude this departure
+                departure.getDepartureTime(),
+                departure.getReturnTime()
+            );
+            
+            if (!conflicts.isEmpty()) {
+                TourDeparture conflict = conflicts.get(0);
+                Map<String, Object> error = new HashMap<>();
+                error.put("success", false);
+                error.put("message", String.format(
+                    "Hướng dẫn viên này đã được phân công cho lịch trình khác (ID: %d) từ %s đến %s. Vui lòng chọn hướng dẫn viên khác.",
+                    conflict.getTourDepartureID(),
+                    conflict.getDepartureTime().toLocalDate(),
+                    conflict.getReturnTime().toLocalDate()
+                ));
+                error.put("conflictingDepartureId", conflict.getTourDepartureID());
+                return ResponseEntity.status(409).body(error); // 409 Conflict
+            }
+            
+            // Assign guide directly
+            departure.setTourGuide(guide);
+            tourDepartureRepository.save(departure);
             
             TourDepartureDto dto = tourDepartureService.getDepartureWithAvailability(id);
             
@@ -241,6 +343,31 @@ public class TourDepartureController {
             error.put("success", false);
             error.put("message", "Failed to delete tour departure: " + e.getMessage());
             return ResponseEntity.status(500).body(error);
+        }
+    }
+    
+    /**
+     * 🔧 Helper: Parse DateTime with multiple formats
+     * Supports:
+     * - ISO 8601 with timezone: "2025-10-19T20:35:00.000Z"
+     * - ISO 8601 without timezone: "2025-10-19T20:35:00"
+     * - Standard format: "2025-10-19T20:35"
+     */
+    private java.time.LocalDateTime parseDateTime(String dateTimeStr) {
+        if (dateTimeStr == null || dateTimeStr.isEmpty()) {
+            throw new IllegalArgumentException("DateTime string cannot be null or empty");
+        }
+        
+        try {
+            // Remove timezone indicator 'Z' and milliseconds if present
+            // "2025-10-19T20:35:00.000Z" → "2025-10-19T20:35:00"
+            String cleaned = dateTimeStr
+                .replace("Z", "")
+                .replaceAll("\\.\\d{3}$", ""); // Remove milliseconds at end
+            
+            return java.time.LocalDateTime.parse(cleaned);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid DateTime format: " + dateTimeStr + ". Expected ISO 8601 format.", e);
         }
     }
 }

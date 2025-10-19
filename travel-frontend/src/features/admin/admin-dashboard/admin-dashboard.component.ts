@@ -47,8 +47,8 @@ interface DashboardStats {
         <a routerLink="/admin/departures" routerLinkActive="active" class="nav-item">
           <i>🚀</i> Lịch khởi hành
         </a>
-        <a routerLink="/admin/bookings" routerLinkActive="active" class="nav-item">
-          <i>📋</i> Đặt tour
+        <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
+          <i>👥</i> Quản lý Users
         </a>
         <a routerLink="/tours" class="nav-item">
           <i>👁️</i> Xem trang khách
@@ -106,9 +106,9 @@ interface DashboardStats {
             <i>🚀</i>
             <span>Thêm lịch khởi hành</span>
           </button>
-          <button class="action-btn" (click)="goToBookings()">
-            <i>📋</i>
-            <span>Xem đặt tour</span>
+          <button class="action-btn" (click)="goToUsers()">
+            <i>👥</i>
+            <span>Quản lý Users</span>
           </button>
           <button class="action-btn" (click)="goToTours()">
             <i>📝</i>
@@ -147,6 +147,10 @@ interface DashboardStats {
 
     .brand-icon {
       font-size: 2rem;
+      font-style: normal;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .brand h1 {
@@ -180,6 +184,14 @@ interface DashboardStats {
       transition: all 0.3s ease;
     }
 
+    .logout-btn i {
+      font-style: normal;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .logout-btn:hover {
       background: rgba(255,255,255,0.3);
       transform: translateY(-2px);
@@ -209,6 +221,16 @@ interface DashboardStats {
       transition: all 0.3s ease;
     }
 
+    .nav-item i {
+      font-style: normal;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
     .nav-item:hover {
       background: #e9ecef;
       border-color: #667eea;
@@ -225,7 +247,7 @@ interface DashboardStats {
       margin: 30px auto;
       padding: 0 30px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Tăng từ 280px lên 300px */
       gap: 25px;
     }
 
@@ -238,6 +260,7 @@ interface DashboardStats {
       gap: 20px;
       align-items: center;
       transition: all 0.3s ease;
+      min-width: 0; /* Cho phép shrink */
     }
 
     .stat-card:hover {
@@ -247,6 +270,7 @@ interface DashboardStats {
 
     .stat-icon {
       font-size: 3rem;
+      font-style: normal;
       width: 80px;
       height: 80px;
       display: flex;
@@ -273,6 +297,8 @@ interface DashboardStats {
 
     .stat-content {
       flex: 1;
+      min-width: 0; /* Cho phép flex item shrink */
+      overflow: hidden; /* Ẩn phần tràn */
     }
 
     .stat-content h3 {
@@ -280,6 +306,9 @@ interface DashboardStats {
       color: #666;
       font-size: 0.95rem;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .stat-value {
@@ -287,6 +316,21 @@ interface DashboardStats {
       font-size: 2.2rem;
       font-weight: 700;
       color: #333;
+      word-break: break-word; /* Cho phép xuống dòng */
+      line-height: 1.2;
+    }
+
+    /* Responsive font size cho số lớn */
+    @media (max-width: 1200px) {
+      .stat-value {
+        font-size: 1.8rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .stat-value {
+        font-size: 1.5rem;
+      }
     }
 
     .stat-detail {
@@ -345,7 +389,13 @@ interface DashboardStats {
     }
 
     .action-btn i {
-      font-size: 2rem;
+      font-style: normal;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
     }
 
     .action-btn:hover {
@@ -414,10 +464,19 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   formatRevenue(amount: number): string {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
+    if (amount >= 1000000000) {
+      // Từ 1 tỷ trở lên: hiển thị dạng "1.5 tỷ"
+      return (amount / 1000000000).toFixed(1) + ' tỷ VNĐ';
+    } else if (amount >= 1000000) {
+      // Từ 1 triệu trở lên: hiển thị dạng "500 tr"
+      return (amount / 1000000).toFixed(0) + ' tr VNĐ';
+    } else {
+      // Dưới 1 triệu: format đầy đủ
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND'
+      }).format(amount);
+    }
   }
 
   goToAddTour(): void {
@@ -428,8 +487,8 @@ export class AdminDashboardComponent implements OnInit {
     this.router.navigate(['/admin/departures/add']);
   }
 
-  goToBookings(): void {
-    this.router.navigate(['/admin/bookings']);
+  goToUsers(): void {
+    this.router.navigate(['/admin/users']);
   }
 
   goToTours(): void {
