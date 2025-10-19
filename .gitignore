@@ -1,0 +1,135 @@
+# ==========================================
+# Backend (Spring Boot / Java / Maven)
+# ==========================================
+
+# Maven
+travel-backend/target/
+travel-backend/.mvn/
+travel-backend/mvnw
+travel-backend/mvnw.cmd
+
+# Java
+*.class
+*.log
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# Spring Boot
+travel-backend/application-local.properties
+travel-backend/application-prod.properties
+travel-backend/backend.log
+
+# ==========================================
+# Frontend (Angular / Node.js)
+# ==========================================
+
+# Dependencies
+travel-frontend/node_modules/
+travel-frontend/package-lock.json
+
+# Build outputs
+travel-frontend/dist/
+travel-frontend/.angular/
+travel-frontend/.sass-cache/
+
+# IDE
+travel-frontend/.vscode/
+travel-frontend/.idea/
+
+# Misc
+travel-frontend/*.log
+travel-frontend/npm-debug.log*
+travel-frontend/yarn-debug.log*
+travel-frontend/yarn-error.log*
+
+# Environment
+travel-frontend/.env
+travel-frontend/.env.local
+
+# ==========================================
+# Database
+# ==========================================
+
+# Database files
+*.db
+*.sqlite
+*.sql.backup
+
+# ==========================================
+# OS Files
+# ==========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ==========================================
+# Temporary Files
+# ==========================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ==========================================
+# Documentation temp files
+# ==========================================
+
+*.pdf.bak
+*.docx~
+
+# ==========================================
+# Custom ignores for this project
+# ==========================================
+
+# Backend logs
+travel-backend/*.log
+
+# Cookies
+travel-backend/cookies.txt
+
+# Backup files
+*.backup
+*.bak
+
+# Test outputs
+coverage/
+*.coverage
+
+# Secrets (DO NOT COMMIT)
+*secrets*.properties
+*.env
