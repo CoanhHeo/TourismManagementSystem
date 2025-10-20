@@ -47,6 +47,9 @@ interface DashboardStats {
         <a routerLink="/admin/departures" routerLinkActive="active" class="nav-item">
           <i>🚀</i> Lịch khởi hành
         </a>
+        <a routerLink="/admin/promotions" routerLinkActive="active" class="nav-item">
+          <i>🎁</i> Quản lý Khuyến mãi
+        </a>
         <a routerLink="/admin/users" routerLinkActive="active" class="nav-item">
           <i>👥</i> Quản lý Users
         </a>

@@ -3,7 +3,7 @@ package com.example.travel.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class PromotionDto {
+public class PromotionDTO {
     private Integer promotionID;
     private String promotionName;
     private BigDecimal percent;
@@ -11,10 +11,10 @@ public class PromotionDto {
     private LocalDate endDate;
 
     // Constructors
-    public PromotionDto() {
+    public PromotionDTO() {
     }
 
-    public PromotionDto(Integer promotionID, String promotionName, BigDecimal percent, 
+    public PromotionDTO(Integer promotionID, String promotionName, BigDecimal percent, 
                        LocalDate startDate, LocalDate endDate) {
         this.promotionID = promotionID;
         this.promotionName = promotionName;

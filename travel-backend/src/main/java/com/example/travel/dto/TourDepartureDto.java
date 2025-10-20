@@ -15,7 +15,7 @@ public class TourDepartureDto {
     private LocalDateTime returnTime;
     private Integer maxQuantity;
     private Integer availableSlots;
-    private PromotionDto promotion; // Add promotion information
+    private PromotionDTO promotion; // Add promotion information
     private TourGuideDto tourGuide; // 🎯 Add tour guide information
 
     // Inner DTO class for TourGuide
@@ -141,11 +141,11 @@ public class TourDepartureDto {
         this.availableSlots = availableSlots;
     }
 
-    public PromotionDto getPromotion() {
+    public PromotionDTO getPromotion() {
         return promotion;
     }
 
-    public void setPromotion(PromotionDto promotion) {
+    public void setPromotion(PromotionDTO promotion) {
         this.promotion = promotion;
     }
 

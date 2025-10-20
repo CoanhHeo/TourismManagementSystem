@@ -14,6 +14,7 @@ import { EditTourComponent } from '../features/admin/edit-tour/edit-tour.compone
 import { ManageTourDeparturesComponent } from '../features/admin/manage-tour-departures/manage-tour-departures.component';
 import { EditTourDepartureComponent } from '../features/admin/edit-tour-departure/edit-tour-departure.component';
 import { ManageUsersComponent } from '../features/admin/manage-users/manage-users.component';
+import { AdminPromotionsComponent } from '../features/admin/admin-promotions/admin-promotions.component';
 import { adminGuard } from './core/guards/admin.guard';
 import { tourGuideGuard } from './core/guards/tour-guide.guard';
 import { TourGuideDashboardComponent } from '../features/tour-guide/dashboard/tour-guide-dashboard.component';
@@ -65,6 +66,11 @@ export const routes: Routes = [
   { 
     path: 'admin/users', 
     component: ManageUsersComponent,
+    canActivate: [adminGuard]
+  },
+  { 
+    path: 'admin/promotions', 
+    component: AdminPromotionsComponent,
     canActivate: [adminGuard]
   },
   // 🎯 NEW: Tour Guide Routes

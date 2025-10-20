@@ -1,6 +1,6 @@
 package com.example.travel.service;
 
-import com.example.travel.dto.PromotionDto;
+import com.example.travel.dto.PromotionDTO;
 import com.example.travel.dto.TourDepartureDto;
 import com.example.travel.entity.Promotion;
 import com.example.travel.entity.TourDeparture;
@@ -107,7 +107,7 @@ public class TourDepartureService {
         
         if (!promotions.isEmpty()) {
             Promotion promotion = promotions.get(0); // Get first active promotion
-            PromotionDto promotionDto = new PromotionDto();
+            PromotionDTO promotionDto = new PromotionDTO();
             promotionDto.setPromotionID(promotion.getPromotionID());
             promotionDto.setPromotionName(promotion.getPromotionName());
             promotionDto.setPercent(promotion.getPercent());
