@@ -689,9 +689,3 @@ Dự án này được phát triển cho mục đích giáo dục và học tậ
 - All open-source contributors
 
 ---
-
-**Được xây dựng với ❤️ bởi Tourism Management Team**
-
-📧 Contact: [Your Email]  
-🌐 Website: [Your Website]  
-📱 GitHub: [Your GitHub]
