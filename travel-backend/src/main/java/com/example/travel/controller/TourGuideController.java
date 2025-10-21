@@ -2,8 +2,6 @@ package com.example.travel.controller;
 
 import com.example.travel.dto.BookingResponseDto;
 import com.example.travel.entity.TourDeparture;
-import com.example.travel.entity.TourGuide;
-import com.example.travel.repository.TourGuideRepository;
 import com.example.travel.service.BookingService;
 import com.example.travel.service.TourGuideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +13,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * REST Controller xử lý các request của Tour Guide (Hướng dẫn viên)
+ * 
+ * Base URL: /api/tour-guide
+ * 
+ * Endpoints:
+ * - GET /api/tour-guide/my-departures              : Lấy danh sách chuyến đi được phân công
+ * - GET /api/tour-guide/upcoming-departures        : Lấy chuyến đi sắp diễn ra
+ * - GET /api/tour-guide/departure/{id}/passengers  : Lấy danh sách hành khách
+ * 
+ * Security: Validate user có role Tour Guide trước khi cho phép truy cập
+ * 
+ * @author Tourism Management System
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/tour-guide")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TourGuideController {
-
-    @Autowired
-    private TourGuideRepository tourGuideRepository;
     
     @Autowired
     private TourGuideService tourGuideService;
@@ -30,16 +40,22 @@ public class TourGuideController {
     private BookingService bookingService;
 
     /**
-     * 🎯 NEW: GET /api/tour-guide/my-departures
-     * Get all departures assigned to the logged-in tour guide
+     * Lấy tất cả chuyến đi được phân công cho tour guide đang đăng nhập
+     * 
+     * Endpoint: GET /api/tour-guide/my-departures
+     * 
+     * Trả về active departures (upcoming + current, chưa kết thúc)
+     * 
+     * @param userId ID của tour guide đang đăng nhập
+     * @return List chuyến đi với thông tin tour, số hành khách, slots còn trống
      */
     @GetMapping("/my-departures")
     public ResponseEntity<?> getMyDepartures(@RequestParam Integer userId) {
         try {
-            // Validate that user is a tour guide
+            // Validate user có role Tour Guide không
             tourGuideService.validateTourGuideAccess(userId);
             
-            // Get active departures (upcoming + current)
+            // Lấy active departures (upcoming + current)
             List<TourDeparture> departures = tourGuideService.getActiveDepartures(userId);
             
             List<Map<String, Object>> response = departures.stream()
@@ -56,21 +72,28 @@ public class TourGuideController {
     }
 
     /**
-     * 🎯 NEW: GET /api/tour-guide/departure/{id}/passengers
-     * Get all passengers (confirmed bookings) for a specific departure
+     * Lấy danh sách hành khách (bookings đã xác nhận) cho một chuyến đi cụ thể
+     * 
+     * Endpoint: GET /api/tour-guide/departure/{departureId}/passengers
+     * 
+     * Chỉ lấy bookings có status PAID (đã thanh toán)
+     * 
+     * @param departureId ID của chuyến đi
+     * @param userId ID của tour guide
+     * @return Danh sách passengers và tổng số hành khách
      */
     @GetMapping("/departure/{departureId}/passengers")
     public ResponseEntity<?> getPassengersByDeparture(
             @PathVariable Integer departureId,
             @RequestParam Integer userId) {
         try {
-            // Validate that user is a tour guide
+            // Validate user có role Tour Guide không
             tourGuideService.validateTourGuideAccess(userId);
             
-            // Get confirmed passengers (PAID bookings only)
+            // Lấy danh sách hành khách đã xác nhận (PAID bookings only)
             List<BookingResponseDto> passengers = bookingService.getPassengersByDeparture(departureId);
             
-            // Get total passenger count
+            // Lấy tổng số hành khách
             Integer totalPassengers = bookingService.getTotalPassengerCount(departureId);
             
             Map<String, Object> response = new HashMap<>();
@@ -88,8 +111,14 @@ public class TourGuideController {
     }
 
     /**
-     * 🎯 NEW: GET /api/tour-guide/upcoming-departures
-     * Get only upcoming departures (haven't started yet)
+     * Lấy danh sách chuyến đi sắp diễn ra (chưa khởi hành)
+     * 
+     * Endpoint: GET /api/tour-guide/upcoming-departures
+     * 
+     * Upcoming: departureTime >= currentTime
+     * 
+     * @param userId ID của tour guide
+     * @return List chuyến đi sắp diễn ra
      */
     @GetMapping("/upcoming-departures")
     public ResponseEntity<?> getUpcomingDepartures(@RequestParam Integer userId) {
@@ -112,7 +141,15 @@ public class TourGuideController {
     }
 
     /**
-     * Convert TourDeparture entity to Map for API response
+     * Convert TourDeparture entity sang Map cho API response
+     * 
+     * Bao gồm thông tin:
+     * - Departure details (ID, times, location, quantity)
+     * - Tour info (name, destination, dayNum)
+     * - Passenger stats (current, available slots)
+     * 
+     * @param departure TourDeparture cần convert
+     * @return Map chứa đầy đủ thông tin
      */
     private Map<String, Object> convertDepartureToMap(TourDeparture departure) {
         Map<String, Object> map = new HashMap<>();
@@ -127,26 +164,11 @@ public class TourGuideController {
         map.put("maxQuantity", departure.getMaxQuantity());
         map.put("originalPrice", departure.getOriginalPrice());
         
-        // Get current passenger count
+        // Lấy số hành khách hiện tại
         Integer passengerCount = bookingService.getTotalPassengerCount(departure.getTourDepartureID());
         map.put("currentPassengers", passengerCount);
         map.put("availableSlots", departure.getMaxQuantity() - passengerCount);
         
-        return map;
-    }
-
-    /**
-     * Convert TourGuide entity to Map for API response
-     */
-    private Map<String, Object> convertToMap(TourGuide guide) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("tourGuideID", guide.getTourGuideID());
-        map.put("userID", guide.getUser().getUserID());
-        map.put("fullname", guide.getUser().getFullname());
-        map.put("email", guide.getUser().getEmail());
-        map.put("phoneNumber", guide.getUser().getPhoneNumber());
-        map.put("rating", guide.getRating());
-        map.put("languages", guide.getLanguages());
         return map;
     }
 }

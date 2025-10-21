@@ -6,6 +6,30 @@ import { Promotion, PromotionService } from '../../../app/core/services/api/prom
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { LoadingSpinnerComponent } from '../../../app/shared/components/loading-spinner.component';
 
+/**
+ * Admin component để quản lý khuyến mãi (Promotion Management)
+ * 
+ * Features:
+ * - Hiển thị danh sách tất cả khuyến mãi
+ * - Hiển thị thống kê (total, active, expired, upcoming)
+ * - Thêm khuyến mãi mới (modal form)
+ * - Chỉnh sửa khuyến mãi (modal form)
+ * - Xóa khuyến mãi (confirmation dialog)
+ * - Auto-refresh stats và list sau mỗi thao tác
+ * 
+ * UI Design:
+ * - Gradient purple background matching manage-tours
+ * - Glassmorphic back button
+ * - Stats cards với color coding theo status
+ * - Responsive table với status badges
+ * - Modal overlay cho add/edit form
+ * 
+ * State Management:
+ * - Angular Signals (promotions, stats, isLoading, showAddModal, etc.)
+ * - Real-time updates sau CRUD operations
+ * 
+ * @standalone component
+ */
 @Component({
   selector: 'app-admin-promotions',
   standalone: true,
@@ -705,17 +729,37 @@ import { LoadingSpinnerComponent } from '../../../app/shared/components/loading-
   `]
 })
 export class AdminPromotionsComponent implements OnInit {
+  /** Signal chứa danh sách tất cả promotions */
   promotions = signal<Promotion[]>([]);
+  
+  /** Signal chứa thống kê (total, active, expired, upcoming) */
   stats = signal({ total: 0, active: 0, expired: 0, upcoming: 0 });
+  
+  /** Signal loading state cho fetch data */
   isLoading = signal(true);
+  
+  /** Signal saving state cho create/update operations */
   isSaving = signal(false);
+  
+  /** Signal deleting state cho delete operation */
   isDeleting = signal(false);
+  
+  /** Signal hiển thị modal add/edit */
   showModal = signal(false);
+  
+  /** Signal hiển thị delete confirmation dialog */
   showDeleteConfirm = signal(false);
+  
+  /** Signal check đang edit hay create mới */
   isEditing = signal(false);
+  
+  /** Signal error message cho date validation */
   dateError = signal('');
+  
+  /** Signal chứa promotion đang được chọn để xóa */
   promotionToDelete = signal<Promotion | null>(null);
 
+  /** Form data cho add/edit modal */
   formData: Promotion = {
     promotionName: '',
     percent: 0,
@@ -729,15 +773,27 @@ export class AdminPromotionsComponent implements OnInit {
     private router: Router
   ) {}
 
+  /**
+   * Lifecycle hook - Load data khi component init
+   * Gọi loadPromotions() và loadStats()
+   */
   ngOnInit() {
     this.loadPromotions();
     this.loadStats();
   }
 
+  /**
+   * Navigate về admin dashboard
+   */
   goBack() {
     this.router.navigate(['/admin']);
   }
 
+  /**
+   * Load tất cả promotions từ backend
+   * Cập nhật promotions signal và tính toán stats local
+   * Hiển thị loading spinner trong quá trình fetch
+   */
   loadPromotions() {
     this.isLoading.set(true);
     this.promotionService.getAllPromotions().subscribe({
@@ -754,6 +810,10 @@ export class AdminPromotionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Load thống kê từ backend API
+   * Backup method nếu calculateStats() local không dùng
+   */
   loadStats() {
     this.promotionService.getPromotionStats().subscribe({
       next: (stats) => {
@@ -765,6 +825,16 @@ export class AdminPromotionsComponent implements OnInit {
     });
   }
 
+  /**
+   * Tính toán thống kê local từ danh sách promotions
+   * 
+   * Logic phân loại:
+   * - active: currentDate nằm trong [startDate, endDate]
+   * - expired: currentDate > endDate
+   * - upcoming: currentDate < startDate
+   * 
+   * @param promotions - Danh sách promotions cần tính stats
+   */
   calculateStats(promotions: Promotion[]) {
     const stats = {
       total: promotions.length,
@@ -801,6 +871,10 @@ export class AdminPromotionsComponent implements OnInit {
     return date.toLocaleDateString('vi-VN');
   }
 
+  /**
+   * Mở modal để thêm promotion mới
+   * Reset form data và error messages
+   */
   openAddModal() {
     this.isEditing.set(false);
     this.formData = {
@@ -813,6 +887,14 @@ export class AdminPromotionsComponent implements OnInit {
     this.showModal.set(true);
   }
 
+  /**
+   * Mở modal để edit promotion
+   * 
+   * Convert dates sang format YYYY-MM-DD cho HTML date input
+   * Dùng formatDateForInput() helper method
+   * 
+   * @param promotion - Promotion cần edit
+   */
   openEditModal(promotion: Promotion) {
     this.isEditing.set(true);
     // Convert dates to YYYY-MM-DD format for date inputs
@@ -827,6 +909,16 @@ export class AdminPromotionsComponent implements OnInit {
 
   /**
    * Format date string to YYYY-MM-DD for HTML date input
+   * 
+   * HTML date input chỉ chấp nhận format YYYY-MM-DD
+   * Backend có thể trả về nhiều format khác nhau
+   * 
+   * Logic:
+   * 1. Nếu đã là YYYY-MM-DD → return as is
+   * 2. Nếu không → parse Date object và format lại
+   * 
+   * @param dateString - Date string từ backend (bất kỳ format nào)
+   * @returns Date string format YYYY-MM-DD cho HTML input
    */
   formatDateForInput(dateString: string): string {
     if (!dateString) return '';
@@ -876,8 +968,6 @@ export class AdminPromotionsComponent implements OnInit {
       ...this.formData,
       percent: Number(this.formData.percent)
     };
-
-    console.log('Submitting promotion data:', promotionData);
 
     const operation = this.isEditing() && promotionData.promotionID
       ? this.promotionService.updatePromotion(promotionData.promotionID, promotionData)

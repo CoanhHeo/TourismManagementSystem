@@ -12,6 +12,18 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Service xử lý business logic cho Tour Guide (Hướng dẫn viên)
+ * 
+ * Chức năng chính:
+ * - Lấy thông tin tour guide theo UserID
+ * - Quản lý danh sách chuyến đi được phân công
+ * - Lọc chuyến đi theo trạng thái (upcoming/current/active)
+ * - Validate quyền truy cập tour guide
+ * 
+ * @author Tourism Management System
+ * @version 1.0
+ */
 @Service
 public class TourGuideService {
 
@@ -25,7 +37,11 @@ public class TourGuideService {
     private UserRepository userRepository;
 
     /**
-     * Get TourGuide by UserID
+     * Lấy thông tin TourGuide theo UserID
+     * 
+     * @param userId ID của user cần tìm
+     * @return TourGuide entity tương ứng
+     * @throws RuntimeException nếu không tìm thấy tour guide
      */
     public TourGuide getTourGuideByUserId(Integer userId) {
         return tourGuideRepository.findByUser_UserID(userId)
@@ -33,7 +49,10 @@ public class TourGuideService {
     }
 
     /**
-     * Get all tour departures assigned to a specific tour guide
+     * Lấy tất cả chuyến đi được phân công cho một tour guide
+     * 
+     * @param userId ID của tour guide
+     * @return Danh sách TourDeparture được phân công
      */
     public List<TourDeparture> getAssignedDepartures(Integer userId) {
         TourGuide tourGuide = getTourGuideByUserId(userId);
@@ -41,7 +60,12 @@ public class TourGuideService {
     }
 
     /**
-     * Get upcoming departures for a tour guide (departures that haven't started yet)
+     * Lấy danh sách chuyến đi sắp diễn ra (chưa khởi hành)
+     * 
+     * Upcoming: departureTime >= currentTime
+     * 
+     * @param userId ID của tour guide
+     * @return Danh sách TourDeparture sắp diễn ra
      */
     public List<TourDeparture> getUpcomingDepartures(Integer userId) {
         TourGuide tourGuide = getTourGuideByUserId(userId);
@@ -51,7 +75,12 @@ public class TourGuideService {
     }
 
     /**
-     * Get current/ongoing departures for a tour guide 
+     * Lấy danh sách chuyến đi đang diễn ra
+     * 
+     * Current: departureTime <= currentTime <= returnTime
+     * 
+     * @param userId ID của tour guide
+     * @return Danh sách TourDeparture đang diễn ra
      */
     public List<TourDeparture> getCurrentDepartures(Integer userId) {
         TourGuide tourGuide = getTourGuideByUserId(userId);
@@ -61,29 +90,47 @@ public class TourGuideService {
     }
 
     /**
-     * Get all active departures (upcoming + current) for a tour guide
+     * Lấy tất cả chuyến đi đang active (upcoming + current)
+     * 
+     * Active: Chuyến đi chưa kết thúc (returnTime >= currentTime)
+     * Sắp xếp theo thời gian khởi hành
+     * 
+     * @param userId ID của tour guide
+     * @return Danh sách TourDeparture đang active
      */
     public List<TourDeparture> getActiveDepartures(Integer userId) {
         TourGuide tourGuide = getTourGuideByUserId(userId);
         LocalDateTime now = LocalDateTime.now();
-        // Get departures that haven't ended yet
+        // Lấy các chuyến đi chưa kết thúc
         return tourDepartureRepository.findByTourGuide_TourGuideIDAndReturnTimeGreaterThanEqualOrderByDepartureTime(
                 tourGuide.getTourGuideID(), now);
     }
 
     /**
-     * Check if a user is a tour guide
+     * Kiểm tra user có phải là tour guide không
+     * 
+     * Check role name = "Tour Guide" (RoleID = 3)
+     * 
+     * @param userId ID của user cần kiểm tra
+     * @return true nếu là tour guide, false nếu không
+     * @throws RuntimeException nếu không tìm thấy user
      */
     public boolean isTourGuide(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // Check if user has Tour Guide role (RoleID = 3)
+        // Kiểm tra user có role Tour Guide không (RoleID = 3)
         return "Tour Guide".equals(user.getRole().getRoleName());
     }
 
     /**
-     * Validate tour guide access - ensure user is authenticated and is a tour guide
+     * Validate quyền truy cập tour guide
+     * 
+     * Đảm bảo user đã authenticate và có role Tour Guide
+     * Sử dụng trong controller để bảo vệ endpoints
+     * 
+     * @param userId ID của user cần validate
+     * @throws RuntimeException nếu user không phải tour guide
      */
     public void validateTourGuideAccess(Integer userId) {
         if (!isTourGuide(userId)) {

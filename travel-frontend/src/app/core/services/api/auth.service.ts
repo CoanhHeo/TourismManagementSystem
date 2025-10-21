@@ -49,7 +49,6 @@ export class AuthService {
           localStorage.setItem('currentUser', JSON.stringify(user));
           // Update current user subject
           this.currentUserSubject.next(user);
-          console.log('User session saved:', user);
         }
       })
     );
@@ -63,8 +62,6 @@ export class AuthService {
     
     // Clear current user state
     this.currentUserSubject.next(null);
-    
-    console.log('User successfully logged out');
   }
 
   getCurrentUser(): KhachHang | null {

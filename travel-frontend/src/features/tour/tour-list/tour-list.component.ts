@@ -1316,14 +1316,6 @@ export class TourListComponent implements OnInit {
     // Subscribe to current user changes
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      console.log('Current user state:', user); // Debug log
-      
-      // Update UI based on user state
-      if (user) {
-        console.log('User is logged in:', user.fullname || user.tenKhachHang);
-      } else {
-        console.log('No user logged in, showing guest UI');
-      }
     });
     
     // Close user menu when clicking outside
@@ -1425,7 +1417,6 @@ export class TourListComponent implements OnInit {
 
   viewTourDetails(tour: Tour): void {
     // TODO: Navigate to tour detail page
-    console.log('Viewing details for tour:', tour);
     const tourName = this.getTourName(tour);
     const destination = this.getTourDestination(tour);
     const price = this.getTourPrice(tour);
@@ -1436,7 +1427,6 @@ export class TourListComponent implements OnInit {
   bookTour(tour: Tour): void {
     // Navigate to booking page
     const tourId = this.getTourId(tour);
-    console.log('Navigating to booking page for tour:', tour, 'tourId:', tourId);
     this.router.navigate(['/tours', tourId, 'book']);
   }
 
@@ -1467,8 +1457,6 @@ export class TourListComponent implements OnInit {
     // Show success toast notification
     this.toastService.success('Đã đăng xuất thành công!');
     
-    console.log('User logged out successfully');
-    
     // Navigate to login page after short delay
     setTimeout(() => {
       this.router.navigate(['/login']);
@@ -1485,7 +1473,6 @@ export class TourListComponent implements OnInit {
 
   // Enhanced profile methods for new UI
   viewProfile(): void {
-    console.log('Navigating to user profile...');
     // TODO: Implement profile navigation
     alert('Tính năng xem hồ sơ đang được phát triển!');
   }

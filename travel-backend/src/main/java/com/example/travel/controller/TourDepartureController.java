@@ -133,6 +133,7 @@ public class TourDepartureController {
             tourDeparture.setMaxQuantity((Integer) payload.get("maxQuantity"));
             
             // Set Tour
+            @SuppressWarnings("unchecked")
             Map<String, Object> tourMap = (Map<String, Object>) payload.get("tour");
             if (tourMap != null && tourMap.get("tourID") != null) {
                 com.example.travel.entity.Tour tour = new com.example.travel.entity.Tour();

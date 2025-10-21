@@ -62,10 +62,9 @@ export class DangkyFormComponent implements OnInit {
       this.loading = false; 
       return; 
     }
-    console.log('Submitting registration:', { idTour, idKhachHang, soLuong });
+    
     this.dkSvc.create({ idTour, idKhachHang, soLuong }).subscribe({
       next: res => { 
-        console.log('Registration successful:', res);
         this.tongGia = res.tongGia; 
         this.loading = false; 
       },

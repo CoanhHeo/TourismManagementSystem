@@ -27,8 +27,11 @@ public class TourController {
     private com.example.travel.repository.BookingRepository bookingRepository;
 
     /**
-     * Get all tours with minimum prices from TourDeparture and booking counts
-     * GET /api/tours
+     * Lấy tất cả tours với giá thấp nhất từ TourDeparture và số lượng bookings
+     * 
+     * Endpoint: GET /api/tours
+     * 
+     * @return List<TourWithPriceDTO> chứa tour + minPrice + bookingCount
      */
     @GetMapping
     public ResponseEntity<List<TourWithPriceDTO>> getAllTours() {
@@ -44,8 +47,12 @@ public class TourController {
     }
     
     /**
-     * Get tour by ID
-     * GET /api/tours/{id}
+     * Lấy tour theo ID
+     * 
+     * Endpoint: GET /api/tours/{id}
+     * 
+     * @param id ID của tour cần lấy
+     * @return Tour entity
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getTourById(@PathVariable Integer id) {
@@ -62,8 +69,12 @@ public class TourController {
     }
 
     /**
-     * Get tours by type
-     * GET /api/tours/type/{tourTypeID}
+     * Lấy tours theo loại tour
+     * 
+     * Endpoint: GET /api/tours/type/{tourTypeID}
+     * 
+     * @param tourTypeID ID của loại tour
+     * @return List tour thuộc loại đó
      */
     @GetMapping("/type/{tourTypeID}")
     public ResponseEntity<List<Tour>> getToursByType(@PathVariable Integer tourTypeID) {
@@ -72,8 +83,12 @@ public class TourController {
     }
 
     /**
-     * Search tours by destination
-     * GET /api/tours/search/destination?q={keyword}
+     * Tìm kiếm tours theo địa điểm du lịch
+     * 
+     * Endpoint: GET /api/tours/search/destination?q={keyword}
+     * 
+     * @param keyword Từ khóa tìm kiếm trong touristDestination
+     * @return List tour khớp keyword
      */
     @GetMapping("/search/destination")
     public ResponseEntity<List<Tour>> searchByDestination(@RequestParam String q) {
@@ -82,8 +97,12 @@ public class TourController {
     }
 
     /**
-     * Search tours by keyword (name or description)
-     * GET /api/tours/search?q={keyword}
+     * Tìm kiếm tours theo từ khóa (tên hoặc mô tả)
+     * 
+     * Endpoint: GET /api/tours/search?q={keyword}
+     * 
+     * @param keyword Từ khóa tìm trong tourName hoặc tourDescription
+     * @return List tour khớp keyword
      */
     @GetMapping("/search")
     public ResponseEntity<List<Tour>> searchTours(@RequestParam String q) {
@@ -92,24 +111,31 @@ public class TourController {
     }
     
     /**
-     * Create a new tour (Admin only)
-     * POST /api/tours
-     * Note: Promotion is now a direct field in Tour entity
-     * - 1 Promotion can be applied to MANY Tours
-     * - 1 Tour can have ONLY 1 Promotion (or NULL)
+     * Tạo tour mới (Admin only)
+     * 
+     * Endpoint: POST /api/tours
+     * 
+     * Promotion Logic:
+     * - 1 Promotion CÓ THỂ áp dụng cho NHIỀU Tours
+     * - 1 Tour CHỈ CÓ 1 Promotion tại một thời điểm (hoặc NULL)
+     * - Promotion là trường trực tiếp trong Tour entity
+     * 
+     * @param requestBody Map chứa tour data và optional promotionId
+     * @return Tour đã tạo hoặc error message
      */
+    @SuppressWarnings("unchecked")
     @PostMapping
-    public ResponseEntity<?> createTour(@RequestBody Map<String, Object> tourData) {
+    public ResponseEntity<?> createTour(@RequestBody Map<String, Object> requestBody) {
         try {
-            // Create tour entity
+            // Tạo tour entity
             Tour tour = new Tour();
-            tour.setTourName((String) tourData.get("tourName"));
-            tour.setDescription((String) tourData.get("description"));
-            tour.setTouristDestination((String) tourData.get("touristDestination"));
+            tour.setTourName((String) requestBody.get("tourName"));
+            tour.setDescription((String) requestBody.get("description"));
+            tour.setTouristDestination((String) requestBody.get("touristDestination"));
             
             // Set tour type
-            if (tourData.containsKey("tourType")) {
-                Map<String, Object> tourTypeData = (Map<String, Object>) tourData.get("tourType");
+            if (requestBody.containsKey("tourType")) {
+                Map<String, Object> tourTypeData = (Map<String, Object>) requestBody.get("tourType");
                 if (tourTypeData != null && tourTypeData.containsKey("tourTypeID")) {
                     Integer tourTypeID = (Integer) tourTypeData.get("tourTypeID");
                     com.example.travel.entity.TourType tourType = new com.example.travel.entity.TourType(tourTypeID);
@@ -118,8 +144,8 @@ public class TourController {
             }
             
             // ✅ ĐƠN GIẢN: Set promotion trực tiếp vào tour entity
-            if (tourData.containsKey("promotion") && tourData.get("promotion") != null) {
-                Map<String, Object> promotionData = (Map<String, Object>) tourData.get("promotion");
+            if (requestBody.containsKey("promotion") && requestBody.get("promotion") != null) {
+                Map<String, Object> promotionData = (Map<String, Object>) requestBody.get("promotion");
                 if (promotionData.containsKey("promotionID")) {
                     Integer promotionID = (Integer) promotionData.get("promotionID");
                     com.example.travel.entity.Promotion promotion = new com.example.travel.entity.Promotion(promotionID);
@@ -169,6 +195,7 @@ public class TourController {
                 existingTour.setTouristDestination((String) tourData.get("touristDestination"));
             }
             if (tourData.containsKey("tourType")) {
+                @SuppressWarnings("unchecked")
                 Map<String, Object> tourTypeData = (Map<String, Object>) tourData.get("tourType");
                 if (tourTypeData != null && tourTypeData.containsKey("tourTypeID")) {
                     Integer tourTypeID = (Integer) tourTypeData.get("tourTypeID");
@@ -183,6 +210,7 @@ public class TourController {
                 
                 if (promotionObj != null) {
                     // Set promotion mới
+                    @SuppressWarnings("unchecked")
                     Map<String, Object> promotionData = (Map<String, Object>) promotionObj;
                     if (promotionData.containsKey("promotionID")) {
                         Integer promotionID = (Integer) promotionData.get("promotionID");
@@ -212,8 +240,12 @@ public class TourController {
     }
     
     /**
-     * Delete a tour (Admin only)
-     * DELETE /api/tours/{id}
+     * Xóa tour (Admin only)
+     * 
+     * Endpoint: DELETE /api/tours/{id}
+     * 
+     * @param id ID của tour cần xóa
+     * @return Success message hoặc error
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTour(@PathVariable Integer id) {
