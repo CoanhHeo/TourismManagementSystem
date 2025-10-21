@@ -5,12 +5,12 @@ Nền tảng đặt tour du lịch hiện đại, full-stack được xây dựn
 ## 🌟 **Tính Năng Chính**
 
 ### **🔐 Hệ Thống Xác Thực & Phân Quyền**
-- ✅ Đăng ký đa bước với xác thực OTP qua email
-- ✅ Xác thực email và số điện thoại
-- ✅ Yêu cầu mật khẩu mạnh
-- ✅ Chọn tỉnh/thành phố Việt Nam
+- ✅ Đăng ký tài khoản với validation đầy đủ
+- ✅ Đăng nhập với email/username và password
+- ✅ Quản lý phiên đăng nhập (Session-based)
+- ✅ Yêu cầu mật khẩu mạnh (BCrypt hashing)
+- ✅ Phân quyền theo vai trò: Customer, Tour Guide, Admin
 - ✅ Giao diện đăng nhập/đăng ký hiện đại
-- ✅ Phân quyền: Customer, Tour Guide, Admin
 
 ### **🎫 Quản Lý Tour Du Lịch**
 - ✅ Danh sách tour chuyên nghiệp với tìm kiếm
@@ -61,13 +61,15 @@ QuanLyDuLich/
 │       │   ├── ApplicationConfig.java # Bean configurations
 │       │   └── WebConfig.java         # CORS, WebMVC config
 │       ├── controller/                # REST Controllers
-│       │   ├── UserController.java    # Xác thực & User
+│       │   ├── UserController.java    # Xác thực & User management
 │       │   ├── TourController.java    # Quản lý tours
+│       │   ├── TourTypeController.java      # Loại tour
 │       │   ├── TourDepartureController.java # Chuyến khởi hành
 │       │   ├── PromotionController.java     # Khuyến mãi
 │       │   ├── BookingController.java       # Đặt tour
 │       │   ├── TourGuideController.java     # Tour Guide
-│       │   └── AdminController.java         # Admin
+│       │   ├── AdminController.java         # Admin
+│       │   └── AdminTourGuideController.java # Admin quản lý TG
 │       ├── dto/                       # Data Transfer Objects
 │       │   ├── PromotionDTO.java      # Promotion DTO
 │       │   ├── PromotionStatsDTO.java # Promotion statistics
@@ -236,6 +238,11 @@ PUT    /{id}                  # Cập nhật tour (Admin)
 DELETE /{id}                  # Xóa tour (Admin)
 ```
 
+### **Tour Types (`/api/tour-types`)**
+```http
+GET    /                      # Lấy tất cả loại tour
+```
+
 ### **Tour Departures (`/api/tour-departures`)**
 ```http
 GET    /                      # Lấy tất cả departures (Admin)
@@ -280,6 +287,11 @@ GET    /users/{roleId}        # Lấy users theo role
 DELETE /users/{id}            # Xóa user
 POST   /users                 # Tạo user mới
 GET    /dashboard             # Thống kê dashboard
+```
+
+### **Admin - Tour Guides (`/api/admin/tour-guides`)**
+```http
+GET    /active                # Lấy danh sách tour guides active
 ```
 
 ## 🔧 **Hướng Dẫn Cài Đặt & Chạy**
