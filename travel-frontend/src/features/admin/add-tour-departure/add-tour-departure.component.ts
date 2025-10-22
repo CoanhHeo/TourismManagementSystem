@@ -7,23 +7,7 @@ import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
-import { TourGuideService } from '../../../app/core/services/api/tour-guide.service';
-
-interface Tour {
-  tourID: number;
-  tourName: string;
-  touristDestination?: string;
-}
-
-interface TourGuide {
-  tourGuideID: number;
-  userID: number;
-  fullname: string;
-  email: string;
-  phoneNumber?: string;
-  rating?: number;
-  languages?: string;
-}
+import { TourGuideService, TourGuide } from '../../../app/core/services/api/tour-guide.service';
 
 interface TourDepartureForm {
   tour: {
