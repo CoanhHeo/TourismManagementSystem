@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
+import { TourGuideService } from '../../../app/core/services/api/tour-guide.service';
 
 interface Tour {
   tourID: number;
@@ -717,7 +718,8 @@ export class AddTourDepartureComponent implements OnInit {
     private router: Router,
     private toastService: ToastService,
     private tourService: TourService,
-    private tourDepartureService: TourDepartureService
+    private tourDepartureService: TourDepartureService,
+    private tourGuideService: TourGuideService
   ) {}
 
   ngOnInit(): void {
@@ -741,11 +743,11 @@ export class AddTourDepartureComponent implements OnInit {
   }
 
   /**
-   * 🎯 Load danh sách Tour Guides available (role Tour Guide + active)
+   * 🎯 Load danh sách Tour Guides available (role Tour Guide + active) từ TourGuideService
    */
   loadAvailableGuides(): void {
     this.loadingGuides = true;
-    this.http.get<TourGuide[]>(`${environment.apiUrl}/admin/tour-guides/active`).subscribe({
+    this.tourGuideService.getActiveTourGuides().subscribe({
       next: (guides) => {
         this.availableGuides = guides;
         this.loadingGuides = false;
