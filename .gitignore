@@ -75,7 +75,10 @@ travel-frontend/.env.local
 # Database files
 *.db
 *.sqlite
+*.sql
 *.sql.backup
+SQLQuery*.sql
+*_QLDL*.sql
 
 # ==========================================
 # OS Files
