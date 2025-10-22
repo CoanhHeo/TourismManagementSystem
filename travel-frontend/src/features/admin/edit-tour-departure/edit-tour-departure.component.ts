@@ -5,6 +5,7 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
+import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 
 interface Tour {
   tourID: number;
@@ -450,7 +451,8 @@ export class EditTourDepartureComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourDepartureService: TourDepartureService
   ) {}
 
   ngOnInit(): void {
@@ -462,13 +464,16 @@ export class EditTourDepartureComponent implements OnInit {
     });
   }
 
+  /**
+   * Tải thông tin chi tiết lịch khởi hành từ TourDepartureService
+   */
   loadDepartureDetail(): void {
     this.loading = true;
     this.errorMessage = '';
 
-    this.http.get<TourDepartureDetail>(`${environment.apiUrl}/tour-departures/${this.departureId}`)
+    this.tourDepartureService.getDepartureById(this.departureId)
       .subscribe({
-        next: (data) => {
+        next: (data: any) => {
           this.departure = data;
           
           // Convert ISO string to datetime-local format
@@ -476,7 +481,7 @@ export class EditTourDepartureComponent implements OnInit {
           this.returnTimeLocal = this.convertToDateTimeLocal(data.returnTime);
           
           // Calculate current bookings
-          this.currentBookings = data.maxQuantity - data.availableSlots;
+          this.currentBookings = data.maxQuantity - (data.availableSlots || 0);
           
           this.loading = false;
         },
@@ -563,7 +568,10 @@ export class EditTourDepartureComponent implements OnInit {
       dayNum: this.departure.dayNum
     };
 
-    this.http.put(`${environment.apiUrl}/tour-departures/${this.departureId}`, updateData)
+    /**
+     * Cập nhật lịch khởi hành sử dụng TourDepartureService
+     */
+    this.tourDepartureService.updateDeparture(this.departureId, updateData)
       .subscribe({
         next: () => {
           this.toastService.success('Cập nhật lịch khởi hành thành công!');

@@ -44,6 +44,9 @@ interface DashboardStats {
         <a routerLink="/admin/tours" routerLinkActive="active" class="nav-item">
           <i>🗺️</i> Quản lý Tours
         </a>
+        <a routerLink="/admin/tour-types" routerLinkActive="active" class="nav-item">
+          <i>🏷️</i> Loại Tour
+        </a>
         <a routerLink="/admin/departures" routerLinkActive="active" class="nav-item">
           <i>🚀</i> Lịch khởi hành
         </a>

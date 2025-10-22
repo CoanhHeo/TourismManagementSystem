@@ -5,19 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
-
-interface TourType {
-  tourTypeID: number;
-  tourTypeName: string;
-}
-
-interface Promotion {
-  promotionID: number;
-  promotionName: string;
-  percent: number;
-  startDate: string;
-  endDate: string;
-}
+import { TourTypeService, TourType } from '../../../app/core/services/api/tour-type.service';
+import { PromotionService, Promotion } from '../../../app/core/services/api/promotion.service';
+import { TourService } from '../../../app/core/services/api/tour.service';
 
 interface TourFormData {
   tourName: string;
@@ -429,7 +419,10 @@ export class AddTourComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourTypeService: TourTypeService,
+    private promotionService: PromotionService,
+    private tourService: TourService
   ) {}
 
   ngOnInit(): void {
@@ -437,24 +430,32 @@ export class AddTourComponent implements OnInit {
     this.loadPromotions();
   }
 
+  /**
+   * Tải danh sách loại tour từ TourTypeService
+   */
   loadTourTypes(): void {
-    this.http.get<TourType[]>(`${environment.apiUrl}/tour-types`).subscribe({
+    this.tourTypeService.getAllTourTypes().subscribe({
       next: (types) => {
         this.tourTypes = types;
       },
       error: (err) => {
         console.error('Error loading tour types:', err);
+        this.toastService.show('Lỗi tải loại tour', 'error');
       }
     });
   }
 
+  /**
+   * Tải danh sách khuyến mãi đang active từ PromotionService
+   */
   loadPromotions(): void {
-    this.http.get<Promotion[]>(`${environment.apiUrl}/promotions/active`).subscribe({
+    this.promotionService.getActivePromotions().subscribe({
       next: (promotions) => {
         this.promotions = promotions;
       },
       error: (err) => {
         console.error('Error loading promotions:', err);
+        this.toastService.show('Lỗi tải khuyến mãi', 'error');
         this.promotions = [];
       }
     });
@@ -486,13 +487,14 @@ export class AddTourComponent implements OnInit {
 
     this.submitting = true;
 
-    this.http.post<any>(`${environment.apiUrl}/tours`, this.formData).subscribe({
-      next: (response) => {
+    // Sử dụng TourService thay vì HTTP trực tiếp
+    this.tourService.createTour(this.formData).subscribe({
+      next: (response: any) => {
         this.submitting = false;
-        if (response.success) {
+        if (response.success || response.tourID) {
           this.toastService.success('Thêm tour thành công!');
           setTimeout(() => {
-            this.router.navigate(['/admin']);
+            this.router.navigate(['/admin/tours']);
           }, 1500);
         } else {
           this.toastService.error(response.message || 'Thêm tour thất bại');

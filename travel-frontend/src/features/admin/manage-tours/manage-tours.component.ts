@@ -5,22 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
-
-interface Tour {
-  tourID: number;
-  tourName: string;
-  description: string;
-  touristDestination: string;
-  tourType?: {
-    tourTypeID: number;
-    tourTypeName: string;
-  };
-  promotion?: {
-    promotionID: number;
-    promotionName: string;
-    percent: number;
-  };
-}
+import { TourService } from '../../../app/core/services/api/tour.service';
+import { Tour } from '../../../app/shared/models/interfaces';
 
 @Component({
   selector: 'app-manage-tours',
@@ -94,7 +80,7 @@ interface Tour {
                   <td class="tour-name">
                     <div class="name-cell">
                       <strong>{{ tour.tourName }}</strong>
-                      <small class="description">{{ truncateText(tour.description, 50) }}</small>
+                      <small class="description">{{ truncateText(tour.description || '', 50) }}</small>
                     </div>
                   </td>
                   <td class="destination">
@@ -116,7 +102,7 @@ interface Tour {
                   <td class="actions">
                     <button 
                       class="btn-edit" 
-                      (click)="editTour(tour.tourID)"
+                      (click)="editTour(tour.tourID!)"
                       title="Chỉnh sửa tour"
                     >
                       <i class="icon">✏️</i>
@@ -735,27 +721,31 @@ interface Tour {
   `]
 })
 export class ManageToursComponent implements OnInit {
-  tours: Tour[] = [];
-  filteredTours: Tour[] = [];
+  tours: any[] = []; // Using any to support promotion field from backend
+  filteredTours: any[] = [];
   searchTerm: string = '';
   loading = false;
   showDeleteModal = false;
-  tourToDelete: Tour | null = null;
+  tourToDelete: any = null;
   deleting = false;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourService: TourService
   ) {}
 
   ngOnInit(): void {
     this.loadTours();
   }
 
+  /**
+   * Tải danh sách tours từ TourService
+   */
   loadTours(): void {
     this.loading = true;
-    this.http.get<Tour[]>(`${environment.apiUrl}/tours`).subscribe({
+    this.tourService.getTours().subscribe({
       next: (tours) => {
         this.tours = tours;
         this.filteredTours = tours;
@@ -763,10 +753,8 @@ export class ManageToursComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading tours:', err);
-        this.toastService.error('Không thể tải danh sách tour');
+        this.toastService.error('Lỗi tải danh sách tours');
         this.loading = false;
-        this.tours = [];
-        this.filteredTours = [];
       }
     });
   }
@@ -779,9 +767,9 @@ export class ManageToursComponent implements OnInit {
     }
 
     this.filteredTours = this.tours.filter(tour =>
-      tour.tourName.toLowerCase().includes(term) ||
-      tour.touristDestination.toLowerCase().includes(term) ||
-      tour.description.toLowerCase().includes(term)
+      tour.tourName?.toLowerCase().includes(term) ||
+      tour.touristDestination?.toLowerCase().includes(term) ||
+      tour.description?.toLowerCase().includes(term)
     );
   }
 
@@ -799,13 +787,16 @@ export class ManageToursComponent implements OnInit {
     this.tourToDelete = null;
   }
 
+  /**
+   * Xóa tour sử dụng TourService
+   */
   deleteTour(): void {
     if (!this.tourToDelete) return;
 
     this.deleting = true;
     const tourId = this.tourToDelete.tourID;
 
-    this.http.delete(`${environment.apiUrl}/tours/${tourId}`).subscribe({
+    this.tourService.deleteTour(tourId).subscribe({
       next: () => {
         this.toastService.success('Xóa tour thành công');
         this.deleting = false;

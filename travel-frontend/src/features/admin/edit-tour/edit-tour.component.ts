@@ -5,19 +5,9 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
-
-interface TourType {
-  tourTypeID: number;
-  tourTypeName: string;
-}
-
-interface Promotion {
-  promotionID: number;
-  promotionName: string;
-  percent: number;
-  startDate: string;
-  endDate: string;
-}
+import { TourTypeService, TourType } from '../../../app/core/services/api/tour-type.service';
+import { PromotionService, Promotion } from '../../../app/core/services/api/promotion.service';
+import { TourService } from '../../../app/core/services/api/tour.service';
 
 interface TourFormData {
   tourName: string;
@@ -448,7 +438,10 @@ export class EditTourComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourTypeService: TourTypeService,
+    private promotionService: PromotionService,
+    private tourService: TourService
   ) {}
 
   ngOnInit(): void {
@@ -465,10 +458,13 @@ export class EditTourComponent implements OnInit {
     });
   }
 
+  /**
+   * Tải thông tin tour từ TourService
+   */
   loadTourData(): void {
     this.loadingTour = true;
-    this.http.get<any>(`${environment.apiUrl}/tours/${this.tourId}`).subscribe({
-      next: (tour) => {
+    this.tourService.getTourById(this.tourId).subscribe({
+      next: (tour: any) => {
         this.formData = {
           tourName: tour.tourName || '',
           description: tour.description || '',
@@ -490,30 +486,32 @@ export class EditTourComponent implements OnInit {
     });
   }
 
+  /**
+   * Tải danh sách loại tour từ TourTypeService
+   */
   loadTourTypes(): void {
-    this.http.get<TourType[]>(`${environment.apiUrl}/tour-types`).subscribe({
+    this.tourTypeService.getAllTourTypes().subscribe({
       next: (types) => {
         this.tourTypes = types;
       },
       error: (err) => {
         console.error('Error loading tour types:', err);
-        this.tourTypes = [
-          { tourTypeID: 1, tourTypeName: 'Du lịch trong nước' },
-          { tourTypeID: 2, tourTypeName: 'Du lịch nước ngoài' },
-          { tourTypeID: 3, tourTypeName: 'Du lịch biển' },
-          { tourTypeID: 4, tourTypeName: 'Du lịch núi' }
-        ];
+        this.toastService.show('Lỗi tải loại tour', 'error');
       }
     });
   }
 
+  /**
+   * Tải danh sách khuyến mãi đang active từ PromotionService
+   */
   loadPromotions(): void {
-    this.http.get<Promotion[]>(`${environment.apiUrl}/promotions/active`).subscribe({
+    this.promotionService.getActivePromotions().subscribe({
       next: (promotions) => {
         this.promotions = promotions;
       },
       error: (err) => {
         console.error('Error loading promotions:', err);
+        this.toastService.show('Lỗi tải khuyến mãi', 'error');
         this.promotions = [];
       }
     });
@@ -545,8 +543,9 @@ export class EditTourComponent implements OnInit {
 
     this.submitting = true;
 
-    this.http.put<any>(`${environment.apiUrl}/tours/${this.tourId}`, this.formData).subscribe({
-      next: (response) => {
+    // Sử dụng TourService thay vì HTTP trực tiếp
+    this.tourService.updateTour(this.tourId, this.formData).subscribe({
+      next: (response: any) => {
         this.submitting = false;
         if (response.success !== false) {
           this.toastService.success('Cập nhật tour thành công!');

@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
+import { TourService } from '../../../app/core/services/api/tour.service';
+import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 
 interface Tour {
   tourID: number;
@@ -704,7 +706,7 @@ export class AddTourDepartureComponent implements OnInit {
     maxQuantity: 30
   };
 
-  tours: Tour[] = [];
+  tours: any[] = []; // Using any to support backend response
   availableGuides: TourGuide[] = []; // 🎯 Danh sách guides
   selectedGuideId: number | null = null; // 🎯 Single guide selection
   loadingGuides = false; // 🎯 Loading state
@@ -713,7 +715,9 @@ export class AddTourDepartureComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourService: TourService,
+    private tourDepartureService: TourDepartureService
   ) {}
 
   ngOnInit(): void {
@@ -721,8 +725,11 @@ export class AddTourDepartureComponent implements OnInit {
     this.loadAvailableGuides(); // 🎯 Load guides khi init
   }
 
+  /**
+   * Tải danh sách tours từ TourService
+   */
   loadTours(): void {
-    this.http.get<Tour[]>(`${environment.apiUrl}/tours`).subscribe({
+    this.tourService.getTours().subscribe({
       next: (tours) => {
         this.tours = tours;
       },
@@ -874,7 +881,10 @@ export class AddTourDepartureComponent implements OnInit {
       guideId: this.selectedGuideId // 🎯 Include selected guide (single)
     };
 
-    this.http.post<any>(`${environment.apiUrl}/tour-departures`, payload).subscribe({
+    /**
+     * Tạo lịch khởi hành mới sử dụng TourDepartureService
+     */
+    this.tourDepartureService.createDeparture(payload).subscribe({
       next: (response) => {
         this.submitting = false;
         if (response.success) {

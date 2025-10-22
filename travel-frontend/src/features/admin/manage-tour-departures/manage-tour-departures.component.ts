@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
+import { TourService } from '../../../app/core/services/api/tour.service';
+import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 
 interface Tour {
   tourID: number;
@@ -1087,7 +1089,9 @@ export class ManageTourDeparturesComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private tourService: TourService,
+    private tourDepartureService: TourDepartureService
   ) {}
 
   ngOnInit(): void {
@@ -1095,9 +1099,12 @@ export class ManageTourDeparturesComponent implements OnInit {
     this.loadDepartures();
   }
 
+  /**
+   * Tải danh sách tours từ TourService
+   */
   loadTours(): void {
-    this.http.get<any[]>(`${environment.apiUrl}/tours`).subscribe({
-      next: (tours) => {
+    this.tourService.getTours().subscribe({
+      next: (tours: any[]) => {
         this.tours = tours.map(t => ({
           tourID: t.tourID,
           tourName: t.tourName,
@@ -1106,14 +1113,18 @@ export class ManageTourDeparturesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading tours:', err);
+        this.toastService.error('Lỗi tải danh sách tour');
       }
     });
   }
 
+  /**
+   * Tải danh sách lịch khởi hành từ TourDepartureService
+   */
   loadDepartures(): void {
     this.loading = true;
-    this.http.get<TourDepartureResponse[]>(`${environment.apiUrl}/tour-departures`).subscribe({
-      next: (response) => {
+    this.tourDepartureService.getAllDepartures().subscribe({
+      next: (response: any[]) => {
         // Transform flat API response to nested frontend model
         this.departures = response.map(r => ({
           departureID: r.tourDepartureID,
@@ -1241,13 +1252,16 @@ export class ManageTourDeparturesComponent implements OnInit {
     this.departureToDelete = null;
   }
 
+  /**
+   * Xóa lịch khởi hành sử dụng TourDepartureService
+   */
   deleteDeparture(): void {
     if (!this.departureToDelete) return;
 
     this.deleting = true;
     const departureId = this.departureToDelete.departureID;
 
-    this.http.delete(`${environment.apiUrl}/tour-departures/${departureId}`).subscribe({
+    this.tourDepartureService.deleteDeparture(departureId).subscribe({
       next: () => {
         this.toastService.success('Xóa lịch khởi hành thành công');
         this.deleting = false;
