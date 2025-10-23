@@ -153,3 +153,18 @@ export interface ErrorResponse {
   timestamp: string;
   fieldErrors?: { [key: string]: string };
 }
+
+/**
+ * Interface cho form thêm/sửa tour (dùng chung cho add-tour và edit-tour)
+ */
+export interface TourFormData {
+  tourName: string;
+  description: string;
+  touristDestination: string;
+  tourType: {
+    tourTypeID: number;
+  };
+  promotion?: {
+    promotionID: number;
+  } | null;
+}

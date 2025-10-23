@@ -8,13 +8,19 @@ import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 
+/**
+ * Local interfaces for manage-tour-departures component
+ * Note: Giữ local vì có structure đặc biệt để transform data từ API response
+ */
+
+// Simplified Tour interface (chỉ cần 3 fields cho component này)
 interface Tour {
   tourID: number;
   tourName: string;
   touristDestination: string;
 }
 
-// API Response from backend
+// API Response from backend (flat structure)
 interface TourDepartureResponse {
   tourDepartureID: number;
   tourID: number;
@@ -38,7 +44,7 @@ interface TourDepartureResponse {
   };
 }
 
-// Frontend model with transformed structure
+// Frontend model (nested structure cho UI display)
 interface TourDeparture {
   departureID: number;
   tour: Tour;

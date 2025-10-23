@@ -8,18 +8,7 @@ import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourTypeService, TourType } from '../../../app/core/services/api/tour-type.service';
 import { PromotionService, Promotion } from '../../../app/core/services/api/promotion.service';
 import { TourService } from '../../../app/core/services/api/tour.service';
-
-interface TourFormData {
-  tourName: string;
-  description: string;
-  touristDestination: string;
-  tourType: {
-    tourTypeID: number;
-  };
-  promotion?: {
-    promotionID: number;
-  } | null;
-}
+import { TourFormData } from '../../../app/shared/models/interfaces';
 
 @Component({
   selector: 'app-edit-tour',
