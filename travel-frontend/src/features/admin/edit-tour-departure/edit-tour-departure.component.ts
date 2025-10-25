@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 
@@ -448,7 +446,6 @@ export class EditTourDepartureComponent implements OnInit {
   errorMessage = '';
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
     private toastService: ToastService,

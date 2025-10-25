@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { Tour } from '../../../app/shared/models/interfaces';
@@ -730,7 +728,6 @@ export class ManageToursComponent implements OnInit {
   deleting = false;
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private toastService: ToastService,
     private tourService: TourService

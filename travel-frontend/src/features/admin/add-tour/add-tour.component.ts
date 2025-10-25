@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { TourTypeService, TourType } from '../../../app/core/services/api/tour-type.service';
 import { PromotionService, Promotion } from '../../../app/core/services/api/promotion.service';
@@ -406,7 +404,6 @@ export class AddTourComponent implements OnInit {
   submitting = false;
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private toastService: ToastService,
     private tourTypeService: TourTypeService,
