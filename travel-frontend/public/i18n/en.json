@@ -1,0 +1,81 @@
+{
+  "COMMON": {
+    "WELCOME": "Welcome",
+    "HOME": "Home",
+    "TOURS": "Tours",
+    "MY_BOOKINGS": "My Bookings",
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "LOGOUT": "Logout",
+    "SEARCH": "Search",
+    "FILTER": "Filter",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "DELETE": "Delete",
+    "EDIT": "Edit",
+    "ADD": "Add",
+    "BACK": "Back",
+    "LOADING": "Loading...",
+    "NO_DATA": "No data available",
+    "ERROR": "Error",
+    "SUCCESS": "Success"
+  },
+  "HEADER": {
+    "TITLE": "Vietnam Travel",
+    "SLOGAN": "Discover the Beauty of Vietnam"
+  },
+  "TOUR": {
+    "LIST_TITLE": "Tour List",
+    "SEARCH_PLACEHOLDER": "Search tours...",
+    "DESTINATION": "Destination",
+    "DURATION": "Duration",
+    "PRICE": "Price",
+    "AVAILABLE_SLOTS": "Available Slots",
+    "BOOK_NOW": "Book Now",
+    "VIEW_DETAILS": "View Details",
+    "NO_TOURS": "No tours found"
+  },
+  "BOOKING": {
+    "MY_BOOKINGS": "My Bookings",
+    "BOOKING_ID": "Booking ID",
+    "TOUR_NAME": "Tour Name",
+    "DEPARTURE_DATE": "Departure Date",
+    "QUANTITY": "Quantity",
+    "TOTAL_PRICE": "Total Price",
+    "STATUS": "Status",
+    "NO_BOOKINGS": "You have no bookings yet"
+  },
+  "ADMIN": {
+    "DASHBOARD": "Admin Dashboard",
+    "MANAGE_TOURS": "Manage Tours",
+    "MANAGE_DEPARTURES": "Manage Departures",
+    "MANAGE_USERS": "Manage Users",
+    "MANAGE_PROMOTIONS": "Manage Promotions",
+    "MANAGE_TOUR_TYPES": "Manage Tour Types",
+    "ADD_TOUR": "Add New Tour",
+    "EDIT_TOUR": "Edit Tour",
+    "TOUR_NAME": "Tour name",
+    "DESCRIPTION": "Description",
+    "TOUR_TYPE": "Tour type",
+    "PROMOTION": "Promotion"
+  },
+  "AUTH": {
+    "LOGIN_TITLE": "Login",
+    "REGISTER_TITLE": "Register",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "CONFIRM_PASSWORD": "Confirm Password",
+    "FULLNAME": "Full Name",
+    "PHONE": "Phone Number",
+    "ADDRESS": "Address",
+    "LOGIN_SUCCESS": "Login successful!",
+    "REGISTER_SUCCESS": "Registration successful!",
+    "LOGIN_FAILED": "Login failed",
+    "REGISTER_FAILED": "Registration failed"
+  },
+  "LANGUAGE": {
+    "SELECT": "Select Language",
+    "VIETNAMESE": "Tiếng Việt",
+    "ENGLISH": "English"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "COMMON": {
+    "WELCOME": "Chào mừng",
+    "HOME": "Trang chủ",
+    "TOURS": "Tours",
+    "MY_BOOKINGS": "Đặt tour của tôi",
+    "LOGIN": "Đăng nhập",
+    "REGISTER": "Đăng ký",
+    "LOGOUT": "Đăng xuất",
+    "SEARCH": "Tìm kiếm",
+    "FILTER": "Lọc",
+    "SAVE": "Lưu",
+    "CANCEL": "Hủy",
+    "DELETE": "Xóa",
+    "EDIT": "Chỉnh sửa",
+    "ADD": "Thêm",
+    "BACK": "Quay lại",
+    "LOADING": "Đang tải...",
+    "NO_DATA": "Không có dữ liệu",
+    "ERROR": "Lỗi",
+    "SUCCESS": "Thành công"
+  },
+  "HEADER": {
+    "TITLE": "Du Lịch Việt Nam",
+    "SLOGAN": "Khám phá vẻ đẹp Việt Nam"
+  },
+  "TOUR": {
+    "LIST_TITLE": "Danh sách Tours",
+    "SEARCH_PLACEHOLDER": "Tìm kiếm tour...",
+    "DESTINATION": "Điểm đến",
+    "DURATION": "Thời lượng",
+    "PRICE": "Giá",
+    "AVAILABLE_SLOTS": "Chỗ còn lại",
+    "BOOK_NOW": "Đặt ngay",
+    "VIEW_DETAILS": "Xem chi tiết",
+    "NO_TOURS": "Không tìm thấy tour nào"
+  },
+  "BOOKING": {
+    "MY_BOOKINGS": "Đặt tour của tôi",
+    "BOOKING_ID": "Mã đặt tour",
+    "TOUR_NAME": "Tên tour",
+    "DEPARTURE_DATE": "Ngày khởi hành",
+    "QUANTITY": "Số lượng",
+    "TOTAL_PRICE": "Tổng giá",
+    "STATUS": "Trạng thái",
+    "NO_BOOKINGS": "Bạn chưa có đặt tour nào"
+  },
+  "ADMIN": {
+    "DASHBOARD": "Bảng điều khiển Admin",
+    "MANAGE_TOURS": "Quản lý Tours",
+    "MANAGE_DEPARTURES": "Quản lý Lịch khởi hành",
+    "MANAGE_USERS": "Quản lý Người dùng",
+    "MANAGE_PROMOTIONS": "Quản lý Khuyến mãi",
+    "MANAGE_TOUR_TYPES": "Quản lý Loại Tour",
+    "ADD_TOUR": "Thêm Tour mới",
+    "EDIT_TOUR": "Chỉnh sửa Tour",
+    "TOUR_NAME": "Tên tour",
+    "DESCRIPTION": "Mô tả",
+    "TOUR_TYPE": "Loại tour",
+    "PROMOTION": "Khuyến mãi"
+  },
+  "AUTH": {
+    "LOGIN_TITLE": "Đăng nhập",
+    "REGISTER_TITLE": "Đăng ký",
+    "EMAIL": "Email",
+    "PASSWORD": "Mật khẩu",
+    "CONFIRM_PASSWORD": "Xác nhận mật khẩu",
+    "FULLNAME": "Họ và tên",
+    "PHONE": "Số điện thoại",
+    "ADDRESS": "Địa chỉ",
+    "LOGIN_SUCCESS": "Đăng nhập thành công!",
+    "REGISTER_SUCCESS": "Đăng ký thành công!",
+    "LOGIN_FAILED": "Đăng nhập thất bại",
+    "REGISTER_FAILED": "Đăng ký thất bại"
+  },
+  "LANGUAGE": {
+    "SELECT": "Chọn ngôn ngữ",
+    "VIETNAMESE": "Tiếng Việt",
+    "ENGLISH": "English"
+  }
+}

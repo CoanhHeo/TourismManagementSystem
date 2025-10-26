@@ -2,15 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { AuthService } from '../../../app/core/services/api/auth.service';
 import { ToastService } from '../../../app/shared/services/toast.service';
 import { Tour, KhachHang } from '../../../app/shared/models/interfaces';
+import { LanguageSwitcherComponent } from '../../../app/shared/components/language-switcher.component';
 
 @Component({
   selector: 'app-tour-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule, LanguageSwitcherComponent],
   template: `
     <div class="tour-container">
       <!-- Header Section -->
@@ -21,6 +23,9 @@ import { Tour, KhachHang } from '../../../app/shared/models/interfaces';
               <i class="logo-icon">🌍</i>
               <span class="brand-name">TravelViet</span>
             </div>
+            
+            <!-- Language Switcher -->
+            <app-language-switcher></app-language-switcher>
             
             <!-- User Profile Section -->
             <div class="user-section">
