@@ -115,3 +115,26 @@ a:focus {
   outline: 2px solid #007AFF;
   outline-offset: 2px;
 }
+
+/* ============================================
+   Fix Emoji Icons Rotation
+   ============================================ */
+
+/* Global fix for all emoji icons to prevent tilting/rotation */
+.icon,
+.btn-icon,
+.logo-icon,
+.detail-icon,
+.info-icon,
+.warning-icon,
+.error-icon,
+.empty-icon,
+.welcome-icon,
+.guest-icon,
+.search-icon,
+i.icon,
+span.icon {
+  display: inline-block;
+  transform: rotate(0deg) !important;
+  font-style: normal !important;
+}

@@ -328,6 +328,8 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
     .logo-icon {
       font-size: 2rem;
       filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .brand-name {
@@ -712,6 +714,8 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
     .btn-icon {
       font-size: 1rem;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .header-main {
@@ -728,6 +732,8 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
     .main-title .icon {
       margin-right: 15px;
       font-size: 3.5rem;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .subtitle {
@@ -760,9 +766,10 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
       position: absolute;
       left: 15px;
       top: 50%;
-      transform: translateY(-50%);
+      transform: translateY(-50%) rotate(0deg);
       font-size: 1.2rem;
       color: #666;
+      display: inline-block;
     }
 
     .search-input {
@@ -1029,6 +1036,8 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
     .detail-icon {
       font-size: 16px;
       width: 20px;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .tour-description {

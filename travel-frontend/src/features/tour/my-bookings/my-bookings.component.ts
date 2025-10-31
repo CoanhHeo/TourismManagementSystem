@@ -204,6 +204,8 @@ interface MyBooking {
     .error-icon, .empty-icon {
       font-size: 4rem;
       margin-bottom: 20px;
+      display: inline-block;
+      transform: rotate(0deg);
     }
     .retry-btn, .browse-btn {
       margin-top: 20px;
@@ -306,6 +308,8 @@ interface MyBooking {
       font-size: 1.3rem;
       min-width: 25px;
       text-align: center;
+      display: inline-block;
+      transform: rotate(0deg);
     }
     .info-content {
       flex: 1;

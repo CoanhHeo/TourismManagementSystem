@@ -608,6 +608,8 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
     .detail-icon {
       font-size: 24px;
       flex-shrink: 0;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .detail-content {
@@ -737,6 +739,8 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
     .warning-icon {
       font-size: 60px;
       margin-bottom: 20px;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .login-required h3 {
@@ -1146,6 +1150,8 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
     .info-icon {
       font-size: 18px;
       min-width: 24px;
+      display: inline-block;
+      transform: rotate(0deg);
     }
 
     .info-content {
@@ -1258,6 +1264,7 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
       font-size: 32px;
       margin-bottom: 8px;
       display: block;
+      transform: rotate(0deg);
     }
 
     .no-departure-warning p {
