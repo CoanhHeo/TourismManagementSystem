@@ -25,8 +25,9 @@
     "SLOGAN": "Khám phá vẻ đẹp Việt Nam"
   },
   "TOUR": {
-    "LIST_TITLE": "Danh sách Tours",
-    "SEARCH_PLACEHOLDER": "Tìm kiếm tour...",
+    "LIST_TITLE": "Khám Phá Các Tour Du Lịch Tuyệt Vời",
+    "SUBTITLE": "Trải nghiệm những chuyến đi đáng nhớ với các tour du lịch chất lượng cao",
+    "SEARCH_PLACEHOLDER": "Tìm kiếm tour theo tên, địa điểm...",
     "DESTINATION": "Điểm đến",
     "DURATION": "Thời lượng",
     "PRICE": "Giá",
@@ -62,6 +63,7 @@
   "AUTH": {
     "LOGIN_TITLE": "Đăng nhập",
     "REGISTER_TITLE": "Đăng ký",
+    "PROFILE": "Hồ sơ",
     "EMAIL": "Email",
     "PASSWORD": "Mật khẩu",
     "CONFIRM_PASSWORD": "Xác nhận mật khẩu",

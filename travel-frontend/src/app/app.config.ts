@@ -8,12 +8,14 @@ import { Observable } from 'rxjs';
 
 /**
  * Custom TranslateLoader - tải file JSON translation
+ * Kiểm tra môi trường và sử dụng đường dẫn phù hợp
  */
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) {}
 
   getTranslation(lang: string): Observable<any> {
-    return this.http.get(`/i18n/${lang}.json`);
+    // Sử dụng đường dẫn tương đối để hoạt động trên cả web và mobile
+    return this.http.get(`i18n/${lang}.json`);
   }
 }
 

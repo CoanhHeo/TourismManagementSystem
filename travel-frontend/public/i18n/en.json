@@ -25,8 +25,9 @@
     "SLOGAN": "Discover the Beauty of Vietnam"
   },
   "TOUR": {
-    "LIST_TITLE": "Tour List",
-    "SEARCH_PLACEHOLDER": "Search tours...",
+    "LIST_TITLE": "Explore Amazing Travel Tours",
+    "SUBTITLE": "Experience memorable trips with high-quality tours",
+    "SEARCH_PLACEHOLDER": "Search tours by name, destination...",
     "DESTINATION": "Destination",
     "DURATION": "Duration",
     "PRICE": "Price",
@@ -62,6 +63,7 @@
   "AUTH": {
     "LOGIN_TITLE": "Login",
     "REGISTER_TITLE": "Register",
+    "PROFILE": "Profile",
     "EMAIL": "Email",
     "PASSWORD": "Password",
     "CONFIRM_PASSWORD": "Confirm Password",

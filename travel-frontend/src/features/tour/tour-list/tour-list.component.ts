@@ -37,17 +37,17 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                     <span class="greeting-text">Xin chào, {{ currentUser.fullname || currentUser.tenKhachHang }}</span>
                   </div>
                   <div class="user-actions">
-                    <button class="action-btn profile-btn" (click)="viewProfile()" title="Xem thông tin cá nhân">
+                    <button class="action-btn profile-btn" (click)="viewProfile()" [title]="'AUTH.PROFILE' | translate">
                       <i class="btn-icon">👤</i>
-                      Hồ sơ
+                      {{ 'AUTH.PROFILE' | translate }}
                     </button>
-                    <button class="action-btn bookings-btn" (click)="viewBookings()" title="Xem lịch sử đặt tour">
+                    <button class="action-btn bookings-btn" (click)="viewBookings()" [title]="'COMMON.MY_BOOKINGS' | translate">
                       <i class="btn-icon">📋</i>
-                      Tour đã đặt
+                      {{ 'COMMON.MY_BOOKINGS' | translate }}
                     </button>
-                    <button class="logout-btn-simple" (click)="logout()" title="Đăng xuất khỏi tài khoản">
+                    <button class="logout-btn-simple" (click)="logout()" [title]="'COMMON.LOGOUT' | translate">
                       <i class="btn-icon">🚪</i>
-                      Đăng xuất
+                      {{ 'COMMON.LOGOUT' | translate }}
                     </button>
                   </div>
                 </div>
@@ -65,13 +65,13 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                   <i class="guest-icon">🌟</i>
                 </div>
                 <div class="guest-actions">
-                  <button class="auth-btn login-btn" (click)="navigateToLogin()" title="Đăng nhập vào tài khoản">
+                  <button class="auth-btn login-btn" (click)="navigateToLogin()" [title]="'COMMON.LOGIN' | translate">
                     <i class="btn-icon">🔑</i>
-                    <span>Đăng nhập</span>
+                    <span>{{ 'COMMON.LOGIN' | translate }}</span>
                   </button>
-                  <button class="auth-btn register-btn" (click)="navigateToRegister()" title="Tạo tài khoản mới">
+                  <button class="auth-btn register-btn" (click)="navigateToRegister()" [title]="'COMMON.REGISTER' | translate">
                     <i class="btn-icon">👤</i>
-                    <span>Đăng ký</span>
+                    <span>{{ 'COMMON.REGISTER' | translate }}</span>
                   </button>
                 </div>
               </div>
@@ -81,9 +81,9 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
           <div class="header-main">
             <h1 class="main-title">
               <i class="icon">🌍</i>
-              Khám Phá Các Tour Du Lịch Tuyệt Vời
+              {{ 'TOUR.LIST_TITLE' | translate }}
             </h1>
-            <p class="subtitle">Trải nghiệm những chuyến đi đáng nhớ với các tour du lịch chất lượng cao</p>
+            <p class="subtitle">{{ 'TOUR.SUBTITLE' | translate }}</p>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
             <i class="search-icon">🔍</i>
             <input 
               type="text" 
-              placeholder="Tìm kiếm tour theo tên, địa điểm..." 
+              [placeholder]="'TOUR.SEARCH_PLACEHOLDER' | translate"
               [(ngModel)]="searchTerm"
               (input)="onSearch()"
               class="search-input"
@@ -766,10 +766,12 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
       position: absolute;
       left: 15px;
       top: 50%;
-      transform: translateY(-50%) rotate(0deg);
+      transform: translateY(-50%) rotate(0deg) !important;
       font-size: 1.2rem;
       color: #666;
       display: inline-block;
+      font-style: normal !important;
+      vertical-align: middle;
     }
 
     .search-input {

@@ -117,6 +117,35 @@ a:focus {
 }
 
 /* ============================================
+   Fix Emoji Icons - Prevent Tilting
+   ============================================ */
+
+/* Fix all emoji icons to stand upright */
+.icon,
+.btn-icon,
+.logo-icon,
+.detail-icon,
+.info-icon,
+.warning-icon,
+.error-icon,
+.empty-icon,
+.welcome-icon,
+.guest-icon,
+.search-icon,
+.menu-icon,
+.item-icon,
+i.icon,
+i[class*="-icon"],
+span.icon,
+span[class*="-icon"] {
+  display: inline-block !important;
+  transform: rotate(0deg) !important;
+  font-style: normal !important;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ============================================
    Fix Emoji Icons Rotation
    ============================================ */
 
