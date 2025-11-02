@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { AuthService } from '../../../app/core/services/api/auth.service';
 import { ToastService } from '../../../app/shared/services/toast.service';
@@ -107,21 +107,21 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
               [class.active]="selectedFilter === 'all'"
               (click)="setFilter('all')"
             >
-              Tất cả
+              {{ 'TOUR.FILTER_ALL' | translate }}
             </button>
             <button 
               class="filter-btn" 
               [class.active]="selectedFilter === 'popular'"
               (click)="setFilter('popular')"
             >
-              Phổ biến
+              {{ 'TOUR.FILTER_POPULAR' | translate }}
             </button>
             <button 
               class="filter-btn" 
               [class.active]="selectedFilter === 'new'"
               (click)="setFilter('new')"
             >
-              Mới nhất
+              {{ 'TOUR.FILTER_NEW' | translate }}
             </button>
           </div>
         </div>
@@ -130,16 +130,16 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
       <!-- Loading State -->
       <div *ngIf="loading" class="loading-container">
         <div class="loading-spinner"></div>
-        <p>Đang tải danh sách tour...</p>
+        <p>{{ 'TOUR.LOADING' | translate }}</p>
       </div>
 
       <!-- Error State -->
       <div *ngIf="error" class="error-container">
         <div class="error-content">
           <i class="error-icon">⚠️</i>
-          <h3>Có lỗi xảy ra</h3>
+          <h3>{{ 'TOUR.ERROR_TITLE' | translate }}</h3>
           <p>{{ error }}</p>
-          <button class="retry-btn" (click)="loadTours()">Thử lại</button>
+          <button class="retry-btn" (click)="loadTours()">{{ 'TOUR.RETRY' | translate }}</button>
         </div>
       </div>
 
@@ -148,14 +148,14 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
         <div class="tours-header">
           <h2>
             <span class="tours-count">{{ filteredTours.length }}</span>
-            tour được tìm thấy
+            {{ 'TOUR.TOURS_FOUND' | translate }}
           </h2>
           <div class="view-toggle">
             <button 
               class="view-btn" 
               [class.active]="viewMode === 'grid'"
               (click)="viewMode = 'grid'"
-              title="Xem dạng lưới"
+              [title]="'TOUR.VIEW_GRID' | translate"
             >
               ⊞
             </button>
@@ -163,7 +163,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
               class="view-btn" 
               [class.active]="viewMode === 'list'"
               (click)="viewMode = 'list'"
-              title="Xem dạng danh sách"
+              [title]="'TOUR.VIEW_LIST' | translate"
             >
               ☰
             </button>
@@ -174,8 +174,8 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
         <div *ngIf="filteredTours.length === 0" class="no-results">
           <div class="no-results-content">
             <i class="no-results-icon">🔍</i>
-            <h3>Không tìm thấy tour nào</h3>
-            <p>Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+            <h3>{{ 'TOUR.NO_TOURS_FOUND' | translate }}</h3>
+            <p>{{ 'TOUR.NO_TOURS_MESSAGE' | translate }}</p>
           </div>
         </div>
 
@@ -213,7 +213,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                 </div>
                 <div class="detail-item" *ngIf="tour.soLuongKhach">
                   <i class="detail-icon">👥</i>
-                  <span>{{ tour.soLuongKhach || 'Tối đa 20' }} khách</span>
+                  <span>{{ tour.soLuongKhach || 'Tối đa 20' }} {{ 'TOUR.MAX_GUESTS' | translate }}</span>
                 </div>
               </div>
 
@@ -223,16 +223,16 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
               <div class="tour-footer">
                 <div class="price-section" *ngIf="getTourPrice(tour) > 0">
-                  <span class="price-label">Từ</span>
+                  <span class="price-label">{{ 'TOUR.PRICE_FROM' | translate }}</span>
                   <span class="price">{{ formatPrice(getTourPrice(tour)) }}</span>
-                  <span class="price-unit">₫/người</span>
+                  <span class="price-unit">{{ 'TOUR.PRICE_PER_PERSON' | translate }}</span>
                 </div>
                 <div class="tour-actions">
                   <button class="btn-secondary" (click)="viewTourDetails(tour)">
-                    Chi tiết
+                    {{ 'TOUR.DETAILS' | translate }}
                   </button>
                   <button class="btn-primary" (click)="bookTour(tour)">
-                    Đặt tour
+                    {{ 'TOUR.BOOK_TOUR' | translate }}
                   </button>
                 </div>
               </div>
@@ -281,10 +281,10 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
               <div class="tour-list-actions">
                 <button class="btn-outline" (click)="viewTourDetails(tour)">
-                  Xem chi tiết
+                  {{ 'TOUR.VIEW_DETAILS' | translate }}
                 </button>
                 <button class="btn-primary" (click)="bookTour(tour)">
-                  Đặt ngay
+                  {{ 'TOUR.BOOK_NOW' | translate }}
                 </button>
               </div>
             </div>
@@ -1323,7 +1323,8 @@ export class TourListComponent implements OnInit {
     private tourSvc: TourService, 
     private authService: AuthService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -1354,7 +1355,7 @@ export class TourListComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.error = 'Không thể tải danh sách tour. Vui lòng thử lại.';
+        this.error = this.translate.instant('TOUR.ERROR_MESSAGE');
         this.loading = false;
       }
     });
@@ -1422,9 +1423,16 @@ export class TourListComponent implements OnInit {
   }
 
   getBadgeText(tour: Tour): string {
-    const badges = ['Phổ biến', 'Mới', 'Khuyến mãi', 'Cao cấp', 'Giá tốt'];
+    const badgeKeys = [
+      'TOUR.BADGE_POPULAR',
+      'TOUR.BADGE_NEW', 
+      'TOUR.BADGE_PROMOTION',
+      'TOUR.BADGE_PREMIUM',
+      'TOUR.BADGE_BEST_PRICE'
+    ];
     const tourId = this.getTourId(tour);
-    return badges[tourId % badges.length];
+    const key = badgeKeys[tourId % badgeKeys.length];
+    return this.translate.instant(key);
   }
 
   onImageError(event: any): void {
