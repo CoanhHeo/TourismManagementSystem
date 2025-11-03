@@ -1,6 +1,6 @@
 # 🌴 Hệ Thống Quản Lý Du Lịch - Tourism Management System
 
-Nền tảng đặt tour du lịch hiện đại, full-stack được xây dựng với **Spring Boot 3** và **Angular 18**.
+Nền tảng đặt tour du lịch hiện đại, full-stack với **Spring Boot 3**, **Angular 18**, và **Capacitor 6** - hỗ trợ cả Web và Mobile Android.
 
 ## 🌟 **Tính Năng Chính**
 
@@ -12,7 +12,23 @@ Nền tảng đặt tour du lịch hiện đại, full-stack được xây dựn
 - ✅ Phân quyền theo vai trò: Customer, Tour Guide, Admin
 - ✅ Giao diện đăng nhập/đăng ký hiện đại
 
-### **🎫 Quản Lý Tour Du Lịch**
+### **� Đa Ngôn Ngữ (i18n)**
+- ✅ Hỗ trợ Tiếng Việt 🇻🇳 và English 🇬🇧
+- ✅ Chuyển đổi ngôn ngữ realtime (không reload page)
+- ✅ Lưu ngôn ngữ vào localStorage
+- ✅ 100% UI đã được i18n hóa
+- ✅ Dễ mở rộng sang ngôn ngữ khác
+
+### **📱 Mobile App (Android)**
+- ✅ Build APK từ Angular app với Capacitor
+- ✅ Native Android app với WebView
+- ✅ SQLite offline support
+- ✅ Cache tour data tự động
+- ✅ Hoạt động offline (xem tours đã cache)
+- ✅ Sync data khi online
+- ✅ Search tours trong cache offline
+
+### **�🎫 Quản Lý Tour Du Lịch**
 - ✅ Danh sách tour chuyên nghiệp với tìm kiếm
 - ✅ Hiển thị dạng lưới và danh sách
 - ✅ Lọc theo loại tour, địa điểm
@@ -20,6 +36,7 @@ Nền tảng đặt tour du lịch hiện đại, full-stack được xây dựn
 - ✅ Thông tin chi tiết tour
 - ✅ Quản lý chuyến khởi hành (Tour Departure)
 - ✅ Admin: CRUD tours đầy đủ
+- ✅ Offline viewing (Mobile)
 
 ### **💰 Hệ Thống Khuyến Mãi**
 - ✅ Quản lý khuyến mãi (Admin)
@@ -35,7 +52,7 @@ Nền tảng đặt tour du lịch hiện đại, full-stack được xây dựn
 - ✅ Theo dõi số lượng chỗ còn trống
 - ✅ Xác nhận thanh toán
 
-### **� Quản Lý Hướng Dẫn Viên**
+### **🧭 Quản Lý Hướng Dẫn Viên**
 - ✅ Tour Guide Dashboard
 - ✅ Xem chuyến đi được phân công
 - ✅ Danh sách hành khách theo chuyến
@@ -214,6 +231,16 @@ QuanLyDuLich/
 | Routing | Angular Router | - |
 | Forms | Reactive Forms | - |
 | State | Signals + RxJS | - |
+| i18n | ngx-translate | 17.0.0 |
+
+### **Mobile Technologies**
+| Component | Technology | Version |
+|-----------|-----------|---------|
+| Mobile Framework | Capacitor | 6.0.3 |
+| Platform | Android | - |
+| Offline Database | SQLite | 6.0.1 |
+| Local Storage | Capacitor Preferences | - |
+| Build Tool | Gradle | 8.2.1 |
 
 ## 📋 **API Documentation**
 
@@ -630,7 +657,398 @@ ng e2e
 ng test --code-coverage
 ```
 
-## 📦 **Deployment**
+## � **Mobile App Development**
+
+### **Khởi Tạo Dự Án Mobile**
+```bash
+# Cài đặt Capacitor
+cd travel-frontend
+npm install @capacitor/core @capacitor/cli
+npx cap init
+
+# Thêm platform Android
+npm install @capacitor/android
+npx cap add android
+
+# Cài đặt SQLite plugin
+npm install @capacitor-community/sqlite
+npx cap sync
+```
+
+### **Cấu Hình Android**
+
+**capacitor.config.ts:**
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.travelvietnam.app',
+  appName: 'Travel Vietnam',
+  webDir: 'dist/travel-frontend/browser',
+  server: {
+    androidScheme: 'http',
+    cleartext: true
+  }
+};
+
+export default config;
+```
+
+**AndroidManifest.xml:** Thêm quyền truy cập internet và network:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<application android:usesCleartextTraffic="true">
+```
+
+### **SQLite Offline Database**
+
+**Khởi tạo Database:**
+```typescript
+async initializeDatabase() {
+  const db = await this.sqlite.createConnection(
+    'tourdbSQLite',
+    false,
+    'no-encryption',
+    1,
+    false
+  );
+  
+  await db.open();
+  
+  // Tạo bảng tours
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS tours (
+      tourID INTEGER PRIMARY KEY,
+      tourName TEXT,
+      description TEXT,
+      price REAL,
+      touristDestination TEXT,
+      tourTypeID INTEGER,
+      promotionID INTEGER,
+      cached_at TEXT
+    )
+  `);
+}
+```
+
+**Sync Data từ API:**
+```typescript
+async syncToursFromApi() {
+  const tours = await this.http.get<Tour[]>(API_URL).toPromise();
+  
+  for (const tour of tours) {
+    await this.db.run(
+      'INSERT OR REPLACE INTO tours VALUES (?,?,?,?,?,?,?,?)',
+      [tour.tourID, tour.tourName, tour.description, 
+       tour.price, tour.touristDestination, tour.tourTypeID,
+       tour.promotionID, new Date().toISOString()]
+    );
+  }
+}
+```
+
+**Offline Access:**
+```typescript
+async getToursOffline(): Promise<Tour[]> {
+  const result = await this.db.query('SELECT * FROM tours');
+  return result.values || [];
+}
+```
+
+### **Build & Deploy APK**
+
+**Build Debug APK:**
+```bash
+# Build Angular app
+ng build
+
+# Sync với Capacitor
+npx cap sync android
+
+# Mở Android Studio
+npx cap open android
+
+# Build từ command line
+cd android
+./gradlew assembleDebug
+
+# APK output location:
+# android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**Install APK trên Emulator/Device:**
+```bash
+# List devices
+adb devices
+
+# Install APK
+adb install android/app/build/outputs/apk/debug/app-debug.apk
+
+# View logs
+adb logcat | grep TravelVietnam
+```
+
+### **Truy Cập SQLite Database**
+
+**Pull database từ device:**
+```bash
+# Sử dụng run-as để truy cập app-private data
+adb shell "run-as com.travelvietnam.app cat databases/tourdbSQLite.db" > tourdb.db
+
+# Xem database với sqlite3
+sqlite3 tourdb.db
+sqlite> .tables
+sqlite> SELECT COUNT(*) FROM tours;
+sqlite> SELECT tourName, price FROM tours LIMIT 5;
+```
+
+**Sử dụng DB Browser for SQLite:**
+```bash
+# macOS
+brew install --cask db-browser-for-sqlite
+
+# Mở file tourdb.db đã pull về
+open -a "DB Browser for SQLite" tourdb.db
+```
+
+## 🌍 **Đa Ngôn Ngữ (i18n)**
+
+### **Cài Đặt ngx-translate**
+
+```bash
+npm install @ngx-translate/core@17.0.0
+```
+
+### **Cấu Hình i18n**
+
+**app.config.ts:**
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+
+export class CustomTranslateLoader implements TranslateLoader {
+  constructor(private http: HttpClient) {}
+  
+  getTranslation(lang: string): Observable<any> {
+    return this.http.get(`i18n/${lang}.json`);
+  }
+}
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    importProvidersFrom(
+      TranslateModule.forRoot({
+        defaultLanguage: 'vi',
+        loader: {
+          provide: TranslateLoader,
+          useClass: CustomTranslateLoader,
+          deps: [HttpClient]
+        }
+      })
+    )
+  ]
+};
+```
+
+### **Translation Files**
+
+**i18n/vi.json:**
+```json
+{
+  "TOUR": {
+    "PRICE_FROM": "Từ",
+    "PRICE_PER_PERSON": "/ người",
+    "BOOK_TOUR": "Đặt tour",
+    "DETAILS": "Chi tiết",
+    "TOURS_FOUND": "tours được tìm thấy",
+    "NO_TOURS_FOUND": "Không tìm thấy tour nào",
+    "LOADING": "Đang tải tours...",
+    "FILTER_ALL": "Tất cả",
+    "FILTER_POPULAR": "Phổ biến",
+    "FILTER_NEW": "Mới nhất",
+    "BADGE_POPULAR": "Phổ biến",
+    "BADGE_NEW": "Mới",
+    "BADGE_PROMOTION": "Khuyến mãi",
+    "BADGE_PREMIUM": "Cao cấp",
+    "BADGE_BEST_PRICE": "Giá tốt"
+  },
+  "COMMON": {
+    "SEARCH": "Tìm kiếm...",
+    "LOADING": "Đang tải...",
+    "ERROR": "Có lỗi xảy ra",
+    "RETRY": "Thử lại"
+  },
+  "AUTH": {
+    "LOGIN": "Đăng nhập",
+    "REGISTER": "Đăng ký",
+    "LOGOUT": "Đăng xuất",
+    "PROFILE": "Hồ sơ"
+  }
+}
+```
+
+**i18n/en.json:**
+```json
+{
+  "TOUR": {
+    "PRICE_FROM": "From",
+    "PRICE_PER_PERSON": "/ person",
+    "BOOK_TOUR": "Book Tour",
+    "DETAILS": "Details",
+    "TOURS_FOUND": "tours found",
+    "NO_TOURS_FOUND": "No tours found",
+    "LOADING": "Loading tours...",
+    "FILTER_ALL": "All",
+    "FILTER_POPULAR": "Popular",
+    "FILTER_NEW": "Newest",
+    "BADGE_POPULAR": "Popular",
+    "BADGE_NEW": "New",
+    "BADGE_PROMOTION": "Promotion",
+    "BADGE_PREMIUM": "Premium",
+    "BADGE_BEST_PRICE": "Best Price"
+  },
+  "COMMON": {
+    "SEARCH": "Search...",
+    "LOADING": "Loading...",
+    "ERROR": "An error occurred",
+    "RETRY": "Retry"
+  },
+  "AUTH": {
+    "LOGIN": "Login",
+    "REGISTER": "Register",
+    "LOGOUT": "Logout",
+    "PROFILE": "Profile"
+  }
+}
+```
+
+### **Sử Dụng Translation trong Component**
+
+**Template (HTML):**
+```html
+<!-- Interpolation với translate pipe -->
+<h1>{{ 'TOUR.TOURS_FOUND' | translate }}</h1>
+<button>{{ 'TOUR.BOOK_TOUR' | translate }}</button>
+<p>{{ 'TOUR.PRICE_FROM' | translate }} {{ tour.price | currency:'VND' }}</p>
+
+<!-- Attribute binding -->
+<input [placeholder]="'COMMON.SEARCH' | translate">
+```
+
+**Component (TypeScript):**
+```typescript
+import { TranslateService } from '@ngx-translate/core';
+
+export class TourListComponent {
+  constructor(private translate: TranslateService) {}
+  
+  // Dịch động trong code
+  getBadgeText(badge: string): string {
+    return this.translate.instant(`TOUR.BADGE_${badge.toUpperCase()}`);
+  }
+  
+  // Dịch với observable
+  showError() {
+    this.translate.get('COMMON.ERROR').subscribe(text => {
+      console.log(text);
+    });
+  }
+}
+```
+
+### **Language Service**
+
+**language.service.ts:**
+```typescript
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LanguageService {
+  private readonly STORAGE_KEY = 'app_language';
+  
+  constructor(private translate: TranslateService) {
+    this.initLanguage();
+  }
+  
+  initLanguage() {
+    const savedLang = localStorage.getItem(this.STORAGE_KEY) || 'vi';
+    this.translate.use(savedLang);
+  }
+  
+  switchLanguage(lang: 'vi' | 'en') {
+    this.translate.use(lang);
+    localStorage.setItem(this.STORAGE_KEY, lang);
+  }
+  
+  getCurrentLanguage(): string {
+    return this.translate.currentLang;
+  }
+}
+```
+
+### **Language Switcher Component**
+
+```typescript
+@Component({
+  selector: 'app-language-switcher',
+  template: `
+    <div class="language-switcher">
+      <button (click)="switchLang('vi')" 
+              [class.active]="currentLang === 'vi'">
+        🇻🇳 VI
+      </button>
+      <button (click)="switchLang('en')" 
+              [class.active]="currentLang === 'en'">
+        🇬🇧 EN
+      </button>
+    </div>
+  `
+})
+export class LanguageSwitcherComponent {
+  currentLang: string;
+  
+  constructor(private languageService: LanguageService) {
+    this.currentLang = this.languageService.getCurrentLanguage();
+  }
+  
+  switchLang(lang: 'vi' | 'en') {
+    this.languageService.switchLanguage(lang);
+    this.currentLang = lang;
+  }
+}
+```
+
+### **Tại Sao Dùng {{ 'KEY' | translate }}?**
+
+**Cú pháp:**
+- `{{ }}`: Angular interpolation - hiển thị giá trị động
+- `'TOUR.BOOK_TOUR'`: Key trong file translation JSON
+- `| translate`: Pipe của ngx-translate để dịch key thành text
+
+**Lợi ích:**
+1. ✅ **Realtime switching**: Đổi ngôn ngữ không cần reload page
+2. ✅ **Maintainable**: Quản lý text tập trung trong JSON files
+3. ✅ **Scalable**: Dễ thêm ngôn ngữ mới (chỉ cần thêm file JSON)
+4. ✅ **Type-safe**: TypeScript có thể check key tồn tại
+5. ✅ **SEO-friendly**: Server-side rendering support
+
+**So sánh:**
+```html
+<!-- ❌ Hard-coded - không linh hoạt -->
+<button>Đặt tour</button>
+
+<!-- ✅ i18n - đa ngôn ngữ -->
+<button>{{ 'TOUR.BOOK_TOUR' | translate }}</button>
+<!-- Tiếng Việt: "Đặt tour" -->
+<!-- English: "Book Tour" -->
+```
+
+## �📦 **Deployment**
 
 ### **Backend Deployment**
 ```bash
@@ -656,7 +1074,182 @@ ng build --configuration production
 # - Firebase: firebase deploy
 ```
 
+### **Mobile App Deployment**
+
+**Build Release APK:**
+```bash
+# 1. Build Angular production
+ng build --configuration production
+
+# 2. Sync với Capacitor
+npx cap sync android
+
+# 3. Build release APK
+cd android
+./gradlew assembleRelease
+
+# 4. Sign APK (nếu cần)
+# Tạo keystore (chỉ làm 1 lần)
+keytool -genkey -v -keystore my-release-key.keystore \
+  -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+
+# 5. APK output:
+# android/app/build/outputs/apk/release/app-release.apk
+```
+
+**Upload lên Google Play Store:**
+1. Tạo tài khoản Google Play Developer
+2. Tạo ứng dụng mới
+3. Upload APK/AAB
+4. Điền thông tin ứng dụng (screenshots, description)
+5. Submit for review
+
+**Build App Bundle (AAB) - Recommended:**
+```bash
+cd android
+./gradlew bundleRelease
+# Output: android/app/build/outputs/bundle/release/app-release.aab
+```
+
+## � **Troubleshooting**
+
+### **Backend Issues**
+
+**Lỗi: "Connection refused" khi frontend gọi API**
+```bash
+# Kiểm tra backend có chạy không
+lsof -i :8080
+
+# Nếu không có process, start backend
+cd travel-backend
+./mvnw spring-boot:run
+
+# Nếu có process cũ bị stuck
+kill -9 <PID>
+./mvnw clean spring-boot:run
+```
+
+**Lỗi: SQL Server connection timeout**
+```bash
+# Kiểm tra SQL Server
+lsof -i :1433
+
+# Restart SQL Server (macOS)
+brew services restart mssql-server
+
+# Test connection
+sqlcmd -S localhost -U sa -P <password>
+```
+
+### **Frontend Issues**
+
+**Lỗi: "Cannot find module '@ngx-translate/core'"**
+```bash
+# Cài đặt lại dependencies
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Lỗi: Icons bị nghiêng/tilted**
+```css
+/* Thêm vào styles.css */
+.icon, .btn-icon, .logo-icon, .search-icon {
+  display: inline-block !important;
+  transform: rotate(0deg) !important;
+  font-style: normal !important;
+  vertical-align: middle;
+  line-height: 1;
+}
+```
+
+### **Mobile Issues**
+
+**Lỗi: "Failed to open database"**
+```typescript
+// Kiểm tra SQLite plugin đã sync chưa
+npx cap sync android
+
+// Kiểm tra permission trong AndroidManifest.xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+**Lỗi: "Cleartext HTTP traffic not permitted"**
+```xml
+<!-- android/app/src/main/AndroidManifest.xml -->
+<application android:usesCleartextTraffic="true">
+```
+
+**Lỗi: Cannot access localhost API from emulator**
+```typescript
+// Sử dụng 10.0.2.2 thay vì localhost trong emulator
+const API_URL = 'http://10.0.2.2:8080/api';
+
+// Hoặc sử dụng IP máy thực
+const API_URL = 'http://192.168.1.x:8080/api';
+```
+
+**Pull database từ device/emulator:**
+```bash
+# Method 1: Using run-as (Debug builds only)
+adb shell "run-as com.travelvietnam.app cat databases/tourdbSQLite.db" > tourdb.db
+
+# Method 2: Root device
+adb shell
+su
+cp /data/data/com.travelvietnam.app/databases/tourdbSQLite.db /sdcard/
+exit
+adb pull /sdcard/tourdbSQLite.db
+```
+
+### **i18n Issues**
+
+**Lỗi: Translation không hoạt động**
+```typescript
+// Kiểm tra path trong CustomTranslateLoader
+getTranslation(lang: string): Observable<any> {
+  // Đúng: i18n/${lang}.json (relative to assets)
+  return this.http.get(`i18n/${lang}.json`);
+  
+  // Sai: /i18n/${lang}.json (absolute path)
+}
+```
+
+**Lỗi: Translation hiển thị key thay vì text**
+```json
+// Kiểm tra key trong JSON file có đúng không
+{
+  "TOUR": {
+    "BOOK_TOUR": "Đặt tour"  // ✅ Có key này
+  }
+}
+
+// Template phải match key
+{{ 'TOUR.BOOK_TOUR' | translate }}  // ✅ Đúng
+{{ 'TOUR.BOOKTOUR' | translate }}   // ❌ Sai (thiếu underscore)
+```
+
 ## 📚 **Tài Liệu Tham Khảo**
+
+### **Backend**
+- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+- [Bean Validation](https://beanvalidation.org/)
+
+### **Frontend**
+- [Angular Documentation](https://angular.io/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [RxJS Documentation](https://rxjs.dev/)
+
+### **Mobile**
+- [Capacitor Documentation](https://capacitorjs.com/docs)
+- [Capacitor SQLite Plugin](https://github.com/capacitor-community/sqlite)
+- [Android Developers](https://developer.android.com/)
+
+### **i18n**
+- [ngx-translate Documentation](https://github.com/ngx-translate/core)
+- [Angular i18n Guide](https://angular.io/guide/i18n)
+
+## �📚 **Tài Liệu Tham Khảo**
 
 ### **Backend**
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
@@ -696,8 +1289,16 @@ Dự án này được phát triển cho mục đích giáo dục và học tậ
 
 ## 🙏 **Acknowledgments**
 
-- Spring Boot Team
-- Angular Team
+- Spring Boot Team - Enterprise Java framework
+- Angular Team - Modern web framework
+- Capacitor Team - Cross-platform mobile runtime
+- ngx-translate Contributors - i18n solution
+- Capacitor Community SQLite - Offline database
 - All open-source contributors
 
 ---
+
+**📱 Mobile App Status:** ✅ Android APK available  
+**🌍 i18n Status:** ✅ Vi/En fully supported  
+**💾 Offline Mode:** ✅ SQLite caching enabled  
+**🚀 Last Updated:** January 2025
