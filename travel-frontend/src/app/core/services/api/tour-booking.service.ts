@@ -8,7 +8,7 @@ import { TourBooking, ApiResponse } from '../../../shared/models/interfaces';
   providedIn: 'root'
 })
 export class TourBookingService {
-  private baseUrl = `${environment.apiUrl}/bookings`;  // Changed from /dangky to /bookings
+  private baseUrl = `${environment.apiUrl}/bookings`;
 
   constructor(private http: HttpClient) {}
 

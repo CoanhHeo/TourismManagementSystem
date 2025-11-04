@@ -7,7 +7,7 @@ import { TourBookingService } from '../../../app/core/services/api/tour-booking.
 import { TourDepartureService } from '../../../app/core/services/api/tour-departure.service';
 import { AuthService } from '../../../app/core/services/api/auth.service';
 import { ToastService } from '../../../app/shared/services/toast.service';
-import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../../app/shared/models/interfaces';
+import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/shared/models/interfaces';
 
 @Component({
   selector: 'app-tour-booking',
@@ -1276,7 +1276,7 @@ import { Tour, KhachHang, TourBooking, TourDeparture, Promotion } from '../../..
 })
 export class TourBookingComponent implements OnInit {
   tour: Tour | null = null;
-  currentUser: KhachHang | null = null;
+  currentUser: User | null = null;
   departures: TourDeparture[] = [];
   selectedDeparture: TourDeparture | null = null;
   booking: TourBooking = {

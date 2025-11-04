@@ -96,7 +96,19 @@ export const API_ENDPOINTS = {
     GET_BY_ID: '/tour/{id}',
     SEARCH: '/tour/search',
   },
-  CUSTOMERS: {
+  
+  // User endpoints (new naming convention)
+  USERS: {
+    GET_ALL: '/users',
+    GET_BY_ID: '/users/{id}',
+    CREATE: '/users',
+    UPDATE: '/users/{id}',
+    DELETE: '/users/{id}',
+    SEARCH: '/users/search',
+  },
+  
+  // @deprecated - Use USERS instead
+  KHACHHANG: {
     GET_ALL: '/khachhang',
     GET_BY_ID: '/khachhang/{id}',
     CREATE: '/khachhang',
@@ -104,6 +116,7 @@ export const API_ENDPOINTS = {
     DELETE: '/khachhang/{id}',
     SEARCH: '/khachhang/search',
   },
+  
   BOOKING: {
     CREATE: '/bookings',
     GET_BY_CUSTOMER: '/bookings/user/{id}',

@@ -3,31 +3,31 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TourService } from '../../../app/core/services/api/tour.service';
-import { DangkyService } from '../../../app/core/services/api/dangky.service';
-import { KhachHangService } from '../../../app/core/services/api/khachhang.service';
+import { BookingService } from '../../../app/core/services/api/booking.service';
+import { UserService } from '../../../app/core/services/api/user.service';
 import { AuthService } from '../../../app/core/services/api/auth.service';
-import { KhachHang, Tour } from '../../../app/shared/models/interfaces';
+import { User, Tour } from '../../../app/shared/models/interfaces';
 
 @Component({
-  selector: 'app-dangky-form',
+  selector: 'app-booking-form',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './dangky-form.component.html',
-  styleUrls: ['./dangky-form.component.css']
+  templateUrl: './booking-form.component.html',
+  styleUrls: ['./booking-form.component.css']
 })
-export class DangkyFormComponent implements OnInit {
+export class BookingFormComponent implements OnInit {
   tours: Tour[] = [];
-  khachHangs: KhachHang[] = [];
-  currentUser: KhachHang | null = null;
-  form = { idTour: null as number | null, idKhachHang: null as number | null, soLuong: 1 };
+  users: User[] = [];
+  currentUser: User | null = null;
+  form = { idTour: null as number | null, userID: null as number | null, soLuong: 1 };
   tongGia: number | null = null;
   loading = false;
   error: string | null = null;
 
   constructor(
     private tourSvc: TourService, 
-    private dkSvc: DangkyService, 
-    private khSvc: KhachHangService,
+    private bookingSvc: BookingService, 
+    private userSvc: UserService,
     private authSvc: AuthService,
     private router: Router
   ) {}
@@ -40,37 +40,42 @@ export class DangkyFormComponent implements OnInit {
       return;
     }
 
-    // Set the customer ID to the logged-in user's ID (handle both new and old field names)
-    this.form.idKhachHang = this.currentUser.userID || this.currentUser.idKhachHang || 0;
+    // Set the user ID to the logged-in user's ID
+    this.form.userID = this.currentUser.userID || this.currentUser.idKhachHang || 0;
 
     this.tourSvc.getAll().subscribe({
-      next: r => this.tours = r,
+      next: (r: Tour[]) => this.tours = r,
       error: () => this.error = 'Không lấy được danh sách tour. Kiểm tra backend.'
     });
     
-    this.khSvc.getAll().subscribe({
-      next: r => this.khachHangs = r,
-      error: () => console.error('Không lấy được danh sách khách hàng')
+    this.userSvc.getAll().subscribe({
+      next: (r: User[]) => this.users = r,
+      error: () => console.error('Không lấy được danh sách người dùng')
     });
   }
 
   submit() {
     this.error = null; this.tongGia = null; this.loading = true;
-    const { idTour, idKhachHang, soLuong } = this.form;
-    if (!idTour || !idKhachHang || !soLuong) { 
+    const { idTour, userID, soLuong } = this.form;
+    if (!idTour || !userID || !soLuong) { 
       this.error = 'Vui lòng điền đầy đủ thông tin';
       this.loading = false; 
       return; 
     }
     
-    this.dkSvc.create({ idTour, idKhachHang, soLuong }).subscribe({
+    // Support both new and legacy field names
+    this.bookingSvc.create({ 
+      idTour, 
+      idKhachHang: userID,  // Legacy field for backward compatibility
+      soLuong 
+    }).subscribe({
       next: res => { 
         this.tongGia = res.tongGia; 
         this.loading = false; 
       },
       error: e => { 
-        console.error('Registration error:', e);
-        this.error = e?.error?.message ?? 'Đăng ký thất bại'; 
+        console.error('Booking error:', e);
+        this.error = e?.error?.message ?? 'Đặt tour thất bại'; 
         this.loading = false; 
       }
     });

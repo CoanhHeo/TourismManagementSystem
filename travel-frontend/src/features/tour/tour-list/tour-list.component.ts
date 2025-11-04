@@ -6,7 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TourService } from '../../../app/core/services/api/tour.service';
 import { AuthService } from '../../../app/core/services/api/auth.service';
 import { ToastService } from '../../../app/shared/services/toast.service';
-import { Tour, KhachHang } from '../../../app/shared/models/interfaces';
+import { Tour, User } from '../../../app/shared/models/interfaces';
 import { LanguageSwitcherComponent } from '../../../app/shared/components/language-switcher.component';
 
 @Component({
@@ -1316,7 +1316,7 @@ export class TourListComponent implements OnInit {
   viewMode: 'grid' | 'list' = 'grid';
   
   // User profile related properties
-  currentUser: KhachHang | null = null;
+  currentUser: User | null = null;
   showUserMenu = false;
 
   constructor(

@@ -8,14 +8,21 @@ import { ToastService } from '../../../app/shared/services/toast.service';
 
 interface User {
   customerID: number;
-  tenKhachHang: string;
+  userID?: number;         // New field
+  fullname?: string;       // New field
+  tenKhachHang?: string;   // @deprecated - for backward compatibility
   email: string;
-  dienThoai: string;
-  diaChi?: string;
-  ngaySinh?: string;
+  phoneNumber?: string;    // New field
+  dienThoai?: string;      // @deprecated - for backward compatibility
+  address?: string;        // New field
+  diaChi?: string;         // @deprecated - for backward compatibility
+  dateOfBirth?: string;    // New field
+  ngaySinh?: string;       // @deprecated - for backward compatibility
   role?: string;
-  trangThai?: boolean;
-  ngayTao?: string;
+  status?: boolean;        // New field
+  trangThai?: boolean;     // @deprecated - for backward compatibility
+  dateCreated?: string;    // New field
+  ngayTao?: string;        // @deprecated - for backward compatibility
 }
 
 @Component({
@@ -165,7 +172,7 @@ interface User {
                 <tr *ngFor="let user of filteredUsers" class="user-row">
                   <td class="user-id">{{ user.customerID }}</td>
                   <td class="user-name">
-                    <strong>{{ user.tenKhachHang }}</strong>
+                    <strong>{{ user.fullname || user.tenKhachHang }}</strong>
                   </td>
                   <td class="email">
                     <a [href]="'mailto:' + user.email">{{ user.email }}</a>
@@ -244,7 +251,7 @@ interface User {
                 Bạn có chắc chắn muốn {{ userToToggle.trangThai ? 'khóa' : 'mở khóa' }} tài khoản này?
               </p>
               <div class="user-info">
-                <strong>{{ userToToggle.tenKhachHang }}</strong>
+                <strong>{{ userToToggle.fullname || userToToggle.tenKhachHang }}</strong>
                 <p>Email: {{ userToToggle.email }}</p>
               </div>
               <p class="warning" *ngIf="userToToggle.trangThai">
@@ -283,7 +290,7 @@ interface User {
             <div class="modal-body" *ngIf="userToDelete">
               <p>Bạn có chắc chắn muốn xóa user này?</p>
               <div class="user-info">
-                <strong>{{ userToDelete.tenKhachHang }}</strong>
+                <strong>{{ userToDelete.fullname || userToDelete.tenKhachHang }}</strong>
                 <p>Email: {{ userToDelete.email }}</p>
               </div>
               <p class="warning">⚠️ Hành động này không thể hoàn tác!</p>
@@ -1268,9 +1275,9 @@ export class ManageUsersComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
       filtered = filtered.filter(u =>
-        u.tenKhachHang.toLowerCase().includes(term) ||
+        (u.fullname || u.tenKhachHang || '').toLowerCase().includes(term) ||
         u.email.toLowerCase().includes(term) ||
-        u.dienThoai.includes(term)
+        (u.phoneNumber || u.dienThoai || '').includes(term)
       );
     }
 

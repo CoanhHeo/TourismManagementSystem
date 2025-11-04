@@ -149,7 +149,7 @@ QuanLyDuLich/
         │   │   │   ├── admin-promotions/  # NEW: Quản lý KM
         │   │   │   ├── add-tour/
         │   │   │   └── add-tour-departure/
-        │   │   └── dangky/            # Legacy booking
+        │   │   └── booking/            # Booking/registration features
         │   ├── app.component.ts       # Root component
         │   ├── app.config.ts          # App configuration
         │   └── app.routes.ts          # Routing

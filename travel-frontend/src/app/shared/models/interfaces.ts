@@ -2,7 +2,7 @@
  * Shared interface definitions for the travel application
  */
 
-export interface KhachHang {
+export interface User {
   // New backend User fields (from UserController)
   userID?: number;
   fullname?: string;
@@ -17,15 +17,18 @@ export interface KhachHang {
   };
   dateCreated?: string;
   
-  // Old schema fields (for backward compatibility)
-  idKhachHang?: number;
-  tenKhachHang?: string;
-  tuoi?: number;
-  queQuan?: string;
+  // Old schema fields (@deprecated - for backward compatibility)
+  idKhachHang?: number;    // @deprecated - use userID
+  tenKhachHang?: string;   // @deprecated - use fullname
+  tuoi?: number;           // @deprecated - use age
+  queQuan?: string;        // @deprecated - use address
   username?: string;
   password?: string;
   status?: 'PENDING_VERIFICATION' | 'ACTIVE' | 'SUSPENDED';
 }
+
+// @deprecated - Use User instead
+export interface KhachHang extends User {}
 
 export interface Tour {
   // New schema fields (matching backend)
@@ -91,15 +94,19 @@ export interface Promotion {
 }
 
 export interface TourBooking {
-  idDangKy?: number;
+  bookingID?: number;      // Renamed from idDangKy
+  idDangKy?: number;       // @deprecated - use bookingID
   idTour: number;
-  idKhachHang: number;
+  userID?: number;         // New: use this for user reference
+  idKhachHang?: number;    // @deprecated - use userID
   soLuong: number;
-  ngayDangKy?: string;  // Old field - backward compatibility
-  dateCreated?: string;  // New field from backend
+  bookingDate?: string;    // Renamed from ngayDangKy
+  ngayDangKy?: string;     // @deprecated - use bookingDate
+  dateCreated?: string;    // New field from backend
   tongGia?: number;
   tenTour?: string;
-  tenKhachHang?: string;
+  userName?: string;       // New: use this for user name
+  tenKhachHang?: string;   // @deprecated - use userName
   tour?: Tour;
   tourDepartureID?: number;  // New: link to selected departure
   // Additional fields from backend response
@@ -133,17 +140,21 @@ export interface OtpVerifyRequest {
   otpCode: string;
 }
 
-export interface DangKyRequest {
+export interface BookingRequest {
   idTour: number;
-  idKhachHang: number;
+  userID?: number;         // New: use this for user ID
+  idKhachHang?: number;    // @deprecated - use userID
   soLuong: number;
 }
+
+// @deprecated - Use BookingRequest instead
+export interface DangKyRequest extends BookingRequest {}
 
 export interface ApiResponse<T = any> {
   message: string;
   data?: T;
   success?: boolean;
-  user?: KhachHang; // For login response
+  user?: User; // For login response
 }
 
 export interface ErrorResponse {

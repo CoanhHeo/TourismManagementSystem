@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { TourBooking } from '../../../shared/models/interfaces';
 
-export interface DangKyRequest { 
+export interface BookingRequest { 
   idTour: number; 
   idKhachHang: number; 
   soLuong: number; 
@@ -23,12 +23,12 @@ export interface BookingDetailResponse {
 }
 
 @Injectable({ providedIn: 'root' })
-export class DangkyService {
-  private base = `${environment.apiUrl}/bookings`;  // Changed from /dangky to /bookings
+export class BookingService {
+  private base = `${environment.apiUrl}/bookings`;
   
   constructor(private http: HttpClient) {}
   
-  create(payload: DangKyRequest) {
+  create(payload: BookingRequest) {
     // Map old field names to new API format
     const bookingRequest = {
       userID: payload.idKhachHang,

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DangkyFormComponent } from '../features/dangky/dangky-form/dangky-form.component';
+import { BookingFormComponent } from '../features/booking/booking-form/booking-form.component';
 import { TourListComponent } from '../features/tour/tour-list/tour-list.component';
 import { TourBookingComponent } from '../features/tour/tour-booking/tour-booking.component';
 import { MyBookingsComponent } from '../features/tour/my-bookings/my-bookings.component';
@@ -24,7 +24,8 @@ import { PassengersListComponent } from '../features/tour-guide/passengers/passe
 export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'dangky', component: DangkyFormComponent },
+  { path: 'booking', component: BookingFormComponent },  // New route name
+  { path: 'dangky', redirectTo: '/booking', pathMatch: 'full' },  // Legacy redirect
   { path: 'tours', component: TourListComponent },
   { path: 'tours/:id/book', component: TourBookingComponent },
   { path: 'my-bookings', component: MyBookingsComponent }, // Old route (keep for compatibility)

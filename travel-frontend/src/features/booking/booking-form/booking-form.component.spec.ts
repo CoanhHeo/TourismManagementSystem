@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DangkyFormComponent } from './dangky-form.component';
+import { BookingFormComponent } from './booking-form.component';
 
-describe('DangkyFormComponent', () => {
-  let component: DangkyFormComponent;
-  let fixture: ComponentFixture<DangkyFormComponent>;
+describe('BookingFormComponent', () => {
+  let component: BookingFormComponent;
+  let fixture: ComponentFixture<BookingFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DangkyFormComponent]
+      imports: [BookingFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DangkyFormComponent);
+    fixture = TestBed.createComponent(BookingFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

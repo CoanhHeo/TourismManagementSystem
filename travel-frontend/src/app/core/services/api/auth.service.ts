@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { 
-  KhachHang, 
+  User, 
   RegisterRequest, 
   LoginRequest, 
   OtpVerifyRequest, 
@@ -15,7 +15,7 @@ import { API_ENDPOINTS } from '../../../shared/utils/constants';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private baseUrl = `${environment.apiUrl}/users`;
-  private currentUserSubject = new BehaviorSubject<KhachHang | null>(null);
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
@@ -64,7 +64,7 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  getCurrentUser(): KhachHang | null {
+  getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
