@@ -3,7 +3,6 @@
  */
 
 export interface User {
-  // New backend User fields (from UserController)
   userID?: number;
   fullname?: string;
   email?: string;
@@ -11,53 +10,27 @@ export interface User {
   phoneNumber?: string;
   age?: number;
   address?: string;
-  role?: string | {  // Allow both string and object formats
+  role?: string | {
     roleID: number;
     roleName: string;
   };
   dateCreated?: string;
-  
-  // Old schema fields (@deprecated - for backward compatibility)
-  idKhachHang?: number;    // @deprecated - use userID
-  tenKhachHang?: string;   // @deprecated - use fullname
-  tuoi?: number;           // @deprecated - use age
-  queQuan?: string;        // @deprecated - use address
   username?: string;
   password?: string;
   status?: 'PENDING_VERIFICATION' | 'ACTIVE' | 'SUSPENDED';
 }
 
-// @deprecated - Use User instead
-export interface KhachHang extends User {}
-
 export interface Tour {
-  // New schema fields (matching backend)
   tourID?: number;
   tourName?: string;
   description?: string;
   touristDestination?: string;
-  originalPrice?: number;  // New: from OriginalPrice column
-  totalBookings?: number;  // Total number of bookings for popularity sorting
+  originalPrice?: number;
+  totalBookings?: number;
   tourType?: {
     tourTypeID: number;
     tourTypeName: string;
   };
-  
-  // Old schema fields (for backward compatibility)
-  idTour?: number;
-  tenTour?: string;
-  giaTourGoc?: number;
-  diaDiemTapTrung?: string;
-  moTa?: string;
-  thoiGian?: string;
-  diaDiem?: string;
-  hinhAnh?: string;
-  soLuongKhach?: number;
-  trangThai?: string;
-  ngayKhoiHanh?: string;
-  ngayKetThuc?: string;
-  soChoConLai?: number;
-  soChoToiDa?: number;
 }
 
 export interface TourDeparture {
@@ -94,40 +67,35 @@ export interface Promotion {
 }
 
 export interface TourBooking {
-  bookingID?: number;      // Renamed from idDangKy
-  idDangKy?: number;       // @deprecated - use bookingID
-  idTour: number;
-  userID?: number;         // New: use this for user reference
-  idKhachHang?: number;    // @deprecated - use userID
-  soLuong: number;
-  bookingDate?: string;    // Renamed from ngayDangKy
-  ngayDangKy?: string;     // @deprecated - use bookingDate
-  dateCreated?: string;    // New field from backend
-  tongGia?: number;
-  tenTour?: string;
-  userName?: string;       // New: use this for user name
-  tenKhachHang?: string;   // @deprecated - use userName
+  bookingID?: number;
+  tourID?: number;
+  userID?: number;
+  quantity?: number;
+  bookingDate?: string;
+  dateCreated?: string;
+  totalPrice?: number;
+  tourName?: string;
+  userName?: string;
   tour?: Tour;
-  tourDepartureID?: number;  // New: link to selected departure
-  // Additional fields from backend response
-  giaTourGoc?: number;
-  diaDiemTapTrung?: string;
-  ngayKhoiHanh?: string;
-  ngayKetThuc?: string;
-  soChoConLai?: number;
-  trangThai?: string;
+  tourDepartureID?: number;
+  originalPrice?: number;
+  departureLocation?: string;
+  departureTime?: string;
+  returnTime?: string;
+  availableSlots?: number;
+  status?: string;
 }
 
 export interface RegisterRequest {
-  fullname: string;      // Maps to backend UserRegistrationDto.fullname
-  age: number | null;    // Maps to backend UserRegistrationDto.age
-  address: string;       // Maps to backend UserRegistrationDto.address (queQuan)
+  fullname: string;
+  age: number | null;
+  address: string;
   email: string;
   phoneNumber: string;
   password: string;
-  confirmPassword: string;  // Frontend only - not sent to backend
-  acceptTerms: boolean;     // Frontend only - not sent to backend
-  gender?: string;          // Optional - maps to backend UserRegistrationDto.gender
+  confirmPassword: string;
+  acceptTerms: boolean;
+  gender?: string;
 }
 
 export interface LoginRequest {
@@ -141,20 +109,16 @@ export interface OtpVerifyRequest {
 }
 
 export interface BookingRequest {
-  idTour: number;
-  userID?: number;         // New: use this for user ID
-  idKhachHang?: number;    // @deprecated - use userID
-  soLuong: number;
+  tourID?: number;
+  userID?: number;
+  quantity?: number;
 }
-
-// @deprecated - Use BookingRequest instead
-export interface DangKyRequest extends BookingRequest {}
 
 export interface ApiResponse<T = any> {
   message: string;
   data?: T;
   success?: boolean;
-  user?: User; // For login response
+  user?: User;
 }
 
 export interface ErrorResponse {
@@ -166,7 +130,7 @@ export interface ErrorResponse {
 }
 
 /**
- * Interface cho form thêm/sửa tour (dùng chung cho add-tour và edit-tour)
+ * Interface for add/edit tour form
  */
 export interface TourFormData {
   tourName: string;

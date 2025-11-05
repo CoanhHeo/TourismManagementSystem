@@ -331,13 +331,13 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                     type="button" 
                     class="qty-btn" 
                     (click)="decreaseQuantity()"
-                    [disabled]="booking.soLuong <= 1"
+                    [disabled]="booking.quantity <= 1"
                   >
                     <i>−</i>
                   </button>
                   <input 
                     type="number" 
-                    [(ngModel)]="booking.soLuong" 
+                    [(ngModel)]="booking.quantity" 
                     name="soLuong" 
                     required 
                     min="1" 
@@ -349,7 +349,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                     type="button" 
                     class="qty-btn" 
                     (click)="increaseQuantity()"
-                    [disabled]="booking.soLuong >= 10 || booking.soLuong >= getAvailableSeats()"
+                    [disabled]="booking.quantity >= 10 || booking.quantity >= getAvailableSeats()"
                   >
                     <i>+</i>
                   </button>
@@ -382,7 +382,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                 <div class="summary-grid" *ngIf="selectedDeparture">
                   <div class="summary-item">
                     <span class="summary-label">Số người:</span>
-                    <span class="summary-value">{{ booking.soLuong }} người</span>
+                    <span class="summary-value">{{ booking.quantity }} người</span>
                   </div>
                   <div class="summary-item">
                     <span class="summary-label">Giá/người:</span>
@@ -397,7 +397,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                       <i class="icon">🎁</i> Giảm giá ({{ getPromotionPercent() }}%):
                     </span>
                     <span class="summary-value discount-amount">
-                      -{{ formatPrice(getDiscountAmount() * booking.soLuong) }}₫
+                      -{{ formatPrice(getDiscountAmount() * booking.quantity) }}₫
                     </span>
                   </div>
                   
@@ -1280,9 +1280,9 @@ export class TourBookingComponent implements OnInit {
   departures: TourDeparture[] = [];
   selectedDeparture: TourDeparture | null = null;
   booking: TourBooking = {
-    idTour: 0,
-    idKhachHang: 0,
-    soLuong: 1
+    tourID: 0,
+    userID: 0,
+    quantity: 1
   };
   
   loading = true;
@@ -1305,7 +1305,7 @@ export class TourBookingComponent implements OnInit {
     // Get tour ID from route
     const idTour = this.route.snapshot.paramMap.get('id');
     if (idTour) {
-      this.booking.idTour = parseInt(idTour);
+      this.booking.tourID = parseInt(idTour);
       this.loadTour();
     } else {
       this.error = 'Không tìm thấy thông tin tour';
@@ -1316,8 +1316,7 @@ export class TourBookingComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       if (user) {
-        // Handle both new and old field names
-        this.booking.idKhachHang = user.userID || user.idKhachHang || 0;
+        this.booking.userID = user.userID || 0;
       }
     });
   }
@@ -1329,8 +1328,8 @@ export class TourBookingComponent implements OnInit {
     this.tourService.getAll().subscribe({
       next: (tours: Tour[]) => {
         this.tour = tours.find((t: Tour) => {
-          const tourId = t.tourID || t.idTour;
-          return tourId === this.booking.idTour;
+          const tourId = t.tourID;
+          return tourId === this.booking.tourID;
         }) || null;
         
         if (!this.tour) {
@@ -1351,7 +1350,13 @@ export class TourBookingComponent implements OnInit {
   loadDepartures(): void {
     this.loadingDepartures = true;
     
-    this.tourDepartureService.getUpcomingDeparturesByTour(this.booking.idTour).subscribe({
+    if (!this.booking.tourID) {
+      this.loading = false;
+      this.loadingDepartures = false;
+      return;
+    }
+    
+    this.tourDepartureService.getUpcomingDeparturesByTour(this.booking.tourID).subscribe({
       next: (departures: TourDeparture[]) => {
         this.departures = departures;
         this.loading = false;
@@ -1423,22 +1428,24 @@ export class TourBookingComponent implements OnInit {
   validateQuantity(): boolean {
     this.quantityError = null;
 
-    if (this.booking.soLuong < 1) {
+    const quantity = this.booking.quantity || 0;
+
+    if (quantity < 1) {
       this.quantityError = 'Số lượng phải lớn hơn 0';
-      this.booking.soLuong = 1;
+      this.booking.quantity = 1;
       return false;
     }
 
-    if (this.booking.soLuong > 10) {
+    if (quantity > 10) {
       this.quantityError = 'Mỗi lần đăng ký tối đa 10 người';
-      this.booking.soLuong = 10;
+      this.booking.quantity = 10;
       return false;
     }
 
     const available = this.getAvailableSeats();
-    if (this.booking.soLuong > available) {
+    if (quantity > available) {
       this.quantityError = `Chỉ còn ${available} chỗ trống`;
-      this.booking.soLuong = available;
+      this.booking.quantity = available;
       return false;
     }
 
@@ -1446,23 +1453,26 @@ export class TourBookingComponent implements OnInit {
   }
 
   increaseQuantity(): void {
-    if (this.booking.soLuong < 10 && this.booking.soLuong < this.getAvailableSeats()) {
-      this.booking.soLuong++;
+    const quantity = this.booking.quantity || 0;
+    if (quantity < 10 && quantity < this.getAvailableSeats()) {
+      this.booking.quantity = quantity + 1;
       this.validateQuantity();
     }
   }
 
   decreaseQuantity(): void {
-    if (this.booking.soLuong > 1) {
-      this.booking.soLuong--;
+    const quantity = this.booking.quantity || 0;
+    if (quantity > 1) {
+      this.booking.quantity = quantity - 1;
       this.validateQuantity();
     }
   }
 
   getTotalPrice(): number {
     if (!this.selectedDeparture) return 0;
+    const quantity = this.booking.quantity || 0;
     const pricePerPerson = this.hasActivePromotion() ? this.calculateDiscountedPrice() : this.selectedDeparture.originalPrice;
-    return pricePerPerson * this.booking.soLuong;
+    return pricePerPerson * quantity;
   }
 
   getAvailableSeats(): number {
@@ -1475,8 +1485,7 @@ export class TourBookingComponent implements OnInit {
   }
 
   isTourFull(): boolean {
-    if (!this.tour) return false;
-    return this.tour.soChoConLai !== undefined && this.tour.soChoConLai <= 0;
+    return false; // Removed legacy field reference
   }
 
   isLowAvailability(): boolean {
@@ -1560,31 +1569,25 @@ export class TourBookingComponent implements OnInit {
     if (this.selectedDeparture) {
       return `${this.selectedDeparture.dayNum} ngày ${this.selectedDeparture.dayNum - 1} đêm`;
     }
-    if (!this.tour?.ngayKhoiHanh || !this.tour?.ngayKetThuc) {
-      return 'Chưa xác định';
-    }
-    const start = new Date(this.tour.ngayKhoiHanh);
-    const end = new Date(this.tour.ngayKetThuc);
-    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    return `${days} ngày ${days - 1} đêm`;
+    return 'Chưa xác định';
   }
 
   getTourName(): string {
-    return this.tour?.tourName || this.tour?.tenTour || 'Tour';
+    return this.tour?.tourName || 'Tour';
   }
 
   getTourDestination(): string {
-    return this.tour?.touristDestination || this.tour?.diaDiemTapTrung || 'N/A';
+    return this.tour?.touristDestination || 'N/A';
   }
 
   getTourImage(): string {
-    if (this.tour?.hinhAnh) return this.tour.hinhAnh;
+    // Removed - no image data in new schema
     const defaultImages = [
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
       'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
       'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57'
     ];
-    const tourId = this.tour?.idTour || this.tour?.tourID || 0;
+    const tourId = this.tour?.tourID || 0;
     const index = tourId % defaultImages.length;
     return `${defaultImages[index]}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80`;
   }
@@ -1599,7 +1602,7 @@ export class TourBookingComponent implements OnInit {
 
   navigateToLogin(): void {
     this.router.navigate(['/login'], { 
-      queryParams: { returnUrl: `/tours/${this.booking.idTour}/book` } 
+      queryParams: { returnUrl: `/tours/${this.booking.tourID}/book` } 
     });
   }
 

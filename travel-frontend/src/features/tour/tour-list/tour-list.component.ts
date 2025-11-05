@@ -1377,8 +1377,8 @@ export class TourListComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(tour => {
-        const tourName = (tour.tourName || tour.tenTour || '').toLowerCase();
-        const destination = (tour.touristDestination || tour.diaDiemTapTrung || '').toLowerCase();
+        const tourName = (tour.tourName || '').toLowerCase();
+        const destination = (tour.touristDestination || '').toLowerCase();
         return tourName.includes(searchLower) || destination.includes(searchLower);
       });
     }
@@ -1402,7 +1402,7 @@ export class TourListComponent implements OnInit {
   }
 
   trackByTourId(index: number, tour: Tour): number {
-    return tour.tourID || tour.idTour || 0;
+    return tour.tourID || 0;
   }
 
   formatPrice(price: number): string {
@@ -1533,24 +1533,24 @@ export class TourListComponent implements OnInit {
     }
   }
 
-  // Helper methods to handle both old and new field names
+  // Helper methods
   getTourName(tour: Tour): string {
-    return tour.tourName || tour.tenTour || 'N/A';
+    return tour.tourName || 'N/A';
   }
 
   getTourDestination(tour: Tour): string {
-    return tour.touristDestination || tour.diaDiemTapTrung || 'N/A';
+    return tour.touristDestination || 'N/A';
   }
 
   getTourDescription(tour: Tour): string {
-    return tour.description || tour.moTa || 'Không có mô tả';
+    return tour.description || 'Không có mô tả';
   }
 
   getTourPrice(tour: Tour): number {
-    return tour.originalPrice || tour.giaTourGoc || 0;
+    return tour.originalPrice || 0;
   }
 
   getTourId(tour: Tour): number {
-    return tour.tourID || tour.idTour || 0;
+    return tour.tourID || 0;
   }
 }

@@ -41,7 +41,7 @@ export class BookingFormComponent implements OnInit {
     }
 
     // Set the user ID to the logged-in user's ID
-    this.form.userID = this.currentUser.userID || this.currentUser.idKhachHang || 0;
+    this.form.userID = this.currentUser.userID || 0;
 
     this.tourSvc.getAll().subscribe({
       next: (r: Tour[]) => this.tours = r,
