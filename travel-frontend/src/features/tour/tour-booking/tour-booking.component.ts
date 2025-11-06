@@ -139,9 +139,9 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                   </div>
                 </div>
 
-                <div *ngIf="tour.moTa || tour.description" class="tour-description">
+                <div *ngIf="tour.description || tour.description" class="tour-description">
                   <h3>Mô tả chi tiết</h3>
-                  <p>{{ tour.moTa || tour.description }}</p>
+                  <p>{{ tour.description || tour.description }}</p>
                 </div>
               </div>
             </div>
@@ -303,7 +303,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                 <input 
                   type="text" 
                   class="form-input" 
-                  [value]="currentUser.fullname || currentUser.tenKhachHang" 
+                  [value]="currentUser.fullname || currentUser.fullname" 
                   disabled
                 >
               </div>
@@ -331,7 +331,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                     type="button" 
                     class="qty-btn" 
                     (click)="decreaseQuantity()"
-                    [disabled]="booking.quantity <= 1"
+                    [disabled]="(booking.quantity || 0) <= 1"
                   >
                     <i>−</i>
                   </button>
@@ -349,7 +349,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                     type="button" 
                     class="qty-btn" 
                     (click)="increaseQuantity()"
-                    [disabled]="booking.quantity >= 10 || booking.quantity >= getAvailableSeats()"
+                    [disabled]="(booking.quantity || 0) >= 10 || (booking.quantity || 0) >= getAvailableSeats()"
                   >
                     <i>+</i>
                   </button>
@@ -397,7 +397,7 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
                       <i class="icon">🎁</i> Giảm giá ({{ getPromotionPercent() }}%):
                     </span>
                     <span class="summary-value discount-amount">
-                      -{{ formatPrice(getDiscountAmount() * booking.quantity) }}₫
+                      -{{ formatPrice(getDiscountAmount() * (booking.quantity || 0)) }}₫
                     </span>
                   </div>
                   

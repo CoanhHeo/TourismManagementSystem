@@ -34,7 +34,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                 <div class="user-profile-simple">
                   <div class="user-welcome">
                     <i class="welcome-icon">👋</i>
-                    <span class="greeting-text">Xin chào, {{ currentUser.fullname || currentUser.tenKhachHang }}</span>
+                    <span class="greeting-text">Xin chào, {{ currentUser.fullname || currentUser.fullname }}</span>
                   </div>
                   <div class="user-actions">
                     <button class="action-btn profile-btn" (click)="viewProfile()" [title]="'AUTH.PROFILE' | translate">
@@ -184,7 +184,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
           <div *ngFor="let tour of filteredTours; trackBy: trackByTourId" class="tour-card">
             <div class="tour-image">
               <img 
-                [src]="tour.hinhAnh || getDefaultImage(tour)" 
+                [src]="getDefaultImage(tour)" 
                 [alt]="getTourName(tour)"
                 (error)="onImageError($event)"
               />
@@ -207,18 +207,18 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                   <i class="detail-icon">📍</i>
                   <span>{{ getTourDestination(tour) }}</span>
                 </div>
-                <div class="detail-item" *ngIf="tour.thoiGian">
+                <div class="detail-item" >
                   <i class="detail-icon">⏰</i>
-                  <span>{{ tour.thoiGian || '3 ngày 2 đêm' }}</span>
+                  <span>{{ '3 ngày 2 đêm' }}</span>
                 </div>
-                <div class="detail-item" *ngIf="tour.soLuongKhach">
+                <div class="detail-item" >
                   <i class="detail-icon">👥</i>
-                  <span>{{ tour.soLuongKhach || 'Tối đa 20' }} {{ 'TOUR.MAX_GUESTS' | translate }}</span>
+                  <span>{{ 'Tối đa 20' }} {{ 'TOUR.MAX_GUESTS' | translate }}</span>
                 </div>
               </div>
 
-              <div class="tour-description" *ngIf="tour.moTa">
-                <p>{{ tour.moTa || 'Khám phá những điểm đến tuyệt vời với dịch vụ chuyên nghiệp và trải nghiệm đáng nhớ.' }}</p>
+              <div class="tour-description" *ngIf="tour.description">
+                <p>{{ tour.description || 'Khám phá những điểm đến tuyệt vời với dịch vụ chuyên nghiệp và trải nghiệm đáng nhớ.' }}</p>
               </div>
 
               <div class="tour-footer">
@@ -245,7 +245,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
           <div *ngFor="let tour of filteredTours; trackBy: trackByTourId" class="tour-list-item">
             <div class="tour-list-image">
               <img 
-                [src]="tour.hinhAnh || getDefaultImage(tour)" 
+                [src]="getDefaultImage(tour)" 
                 [alt]="getTourName(tour)"
                 (error)="onImageError($event)"
               />
@@ -267,7 +267,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
                 </span>
                 <span class="detail-item">
                   <i class="detail-icon">⏰</i>
-                  {{ tour.thoiGian || '3 ngày 2 đêm' }}
+                  {{ '3 ngày 2 đêm' }}
                 </span>
                 <span class="detail-item">
                   <i class="detail-icon">★</i>
@@ -276,7 +276,7 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
               </div>
 
               <div class="tour-list-description">
-                <p>{{ tour.moTa || 'Khám phá những điểm đến tuyệt vời với dịch vụ chuyên nghiệp và trải nghiệm đáng nhớ.' }}</p>
+                <p>{{ tour.description || 'Khám phá những điểm đến tuyệt vời với dịch vụ chuyên nghiệp và trải nghiệm đáng nhớ.' }}</p>
               </div>
 
               <div class="tour-list-actions">

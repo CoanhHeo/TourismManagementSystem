@@ -1,8 +1,8 @@
 <div class="user-info" *ngIf="currentUser" style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
   <h3 style="margin: 0 0 10px 0; color: #007bff;">Thông tin người dùng</h3>
-  <p style="margin: 5px 0;"><strong>Tên:</strong> {{ currentUser.fullname || currentUser.tenKhachHang }}</p>
-  <p style="margin: 5px 0;"><strong>Tuổi:</strong> {{ currentUser.age || currentUser.tuoi }}</p>
-  <p style="margin: 5px 0;"><strong>Địa chỉ:</strong> {{ currentUser.address || currentUser.queQuan }}</p>
+  <p style="margin: 5px 0;"><strong>Tên:</strong> {{ currentUser.fullname }}</p>
+  <p style="margin: 5px 0;"><strong>Tuổi:</strong> {{ currentUser.age }}</p>
+  <p style="margin: 5px 0;"><strong>Địa chỉ:</strong> {{ currentUser.address }}</p>
   <button type="button" (click)="logout()" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 10px;">
     Đăng xuất
   </button>
@@ -14,8 +14,8 @@
   <label>Chọn tour</label>
   <select [(ngModel)]="form.idTour" name="idTour" required>
     <option [ngValue]="null" disabled>-- chọn --</option>
-    <option *ngFor="let t of tours" [ngValue]="t.idTour">
-      {{ t.tenTour }} — {{ t.giaTourGoc | number }}₫
+    <option *ngFor="let t of tours" [ngValue]="t.tourID">
+      {{ t.tourName }} — {{ t.originalPrice | number }}₫
     </option>
   </select>
 
