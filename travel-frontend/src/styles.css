@@ -167,3 +167,213 @@ span.icon {
   transform: rotate(0deg) !important;
   font-style: normal !important;
 }
+
+/* ============================================
+   Responsive Design - Mobile First
+   ============================================ */
+
+/* Mobile base styles (< 768px) */
+@media (max-width: 767px) {
+  body {
+    font-size: 14px;
+    padding: 0;
+  }
+
+  /* Container adjustments */
+  .container {
+    padding: 12px !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Typography */
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 20px !important; }
+  h3 { font-size: 18px !important; }
+  h4 { font-size: 16px !important; }
+  h5 { font-size: 14px !important; }
+  h6 { font-size: 12px !important; }
+
+  /* Buttons */
+  button,
+  .btn {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  /* Forms */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    padding: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Tables */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Cards */
+  .card {
+    margin: 8px 0 !important;
+    padding: 12px !important;
+  }
+
+  /* Grid layouts */
+  .grid,
+  .tour-grid,
+  .booking-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Hide desktop elements */
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Navigation */
+  nav {
+    flex-direction: column !important;
+  }
+
+  nav a,
+  nav button {
+    width: 100% !important;
+    text-align: left !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Modal adjustments */
+  .modal,
+  .dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 10px !important;
+    padding: 16px !important;
+  }
+
+  /* Image adjustments */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Padding adjustments */
+  .p-4 { padding: 12px !important; }
+  .p-3 { padding: 8px !important; }
+  .p-2 { padding: 4px !important; }
+  
+  .px-4 { padding-left: 12px !important; padding-right: 12px !important; }
+  .py-4 { padding-top: 12px !important; padding-bottom: 12px !important; }
+
+  /* Margin adjustments */
+  .m-4 { margin: 12px !important; }
+  .m-3 { margin: 8px !important; }
+  .m-2 { margin: 4px !important; }
+
+  /* Flex adjustments */
+  .flex-row {
+    flex-direction: column !important;
+  }
+
+  /* Touch targets */
+  a, button, input[type="checkbox"], input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container {
+    max-width: 720px;
+    padding: 16px;
+  }
+
+  .grid,
+  .tour-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1200px;
+    padding: 24px;
+  }
+
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   Safe Area Insets for iOS Notch/Island
+   ============================================ */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ============================================
+   Touch Optimization
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Touch device styles */
+  button,
+  a,
+  .clickable {
+    -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
+    user-select: none;
+  }
+
+  /* Larger touch targets */
+  button,
+  a.btn,
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+}
+
+/* ============================================
+   Smooth Scrolling on Mobile
+   ============================================ */
+.scroll-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ============================================
+   Loading States
+   ============================================ */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

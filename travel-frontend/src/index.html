@@ -2,10 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>TravelFrontend</title>
+  <title>TravelViet - Tour Management</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Viewport with iOS optimizations -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Travel Vietnam - Explore amazing tours and destinations">
+  <meta name="theme-color" content="#667eea">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TravelViet">
+  
+  <!-- iOS Splash Screens -->
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon.ico">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Prevent text size adjustment on iOS -->
+  <style>
+    html {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    
+    /* Prevent bounce scroll on iOS */
+    body {
+      overscroll-behavior-y: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Safe area insets for notch/island */
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+  </style>
 </head>
 <body>
   <app-root></app-root>

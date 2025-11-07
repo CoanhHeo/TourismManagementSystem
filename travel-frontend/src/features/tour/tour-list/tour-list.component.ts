@@ -1220,15 +1220,43 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
         text-align: center;
       }
 
+      .logo-section {
+        justify-content: center;
+      }
+
       .user-profile {
         flex-direction: column;
         gap: 15px;
+      }
+
+      .user-profile-simple {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .user-actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .action-btn,
+      .logout-btn-simple {
+        flex: 1;
+        justify-content: center;
+        min-width: 80px;
       }
 
       .guest-actions {
         flex-direction: column;
         width: 100%;
         max-width: 300px;
+        margin: 0 auto;
+      }
+
+      .auth-btn {
+        width: 100%;
+        justify-content: center;
       }
 
       .dropdown-menu {
@@ -1243,16 +1271,68 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
       .search-container {
         flex-direction: column;
+        gap: 12px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .filter-controls {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .filter-btn,
+      .view-toggle-btn {
+        width: 100%;
+        justify-content: center;
       }
 
       .tours-header {
         flex-direction: column;
         text-align: center;
+        gap: 15px;
+      }
+
+      .view-toggle {
+        justify-content: center;
+        width: 100%;
       }
 
       .tours-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+        padding: 0 10px;
+      }
+
+      .tour-card {
+        margin: 0;
+      }
+
+      .tour-image {
+        height: 220px;
+      }
+
+      .tour-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .tour-price {
+        text-align: left;
+      }
+
+      .tour-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .view-btn,
+      .book-btn {
+        width: 100%;
+        justify-content: center;
       }
 
       .tour-list-item {
@@ -1268,11 +1348,55 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
         flex-direction: column;
         gap: 10px;
       }
+
+      .tour-list-actions {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .tour-list-actions .view-btn,
+      .tour-list-actions .book-btn {
+        width: 100%;
+      }
+
+      /* Hide desktop-only elements */
+      .desktop-only {
+        display: none !important;
+      }
+
+      /* Adjust padding and margins */
+      .header-section {
+        padding: 15px 10px 40px 10px;
+      }
+
+      .search-section {
+        padding: 15px 10px;
+      }
+
+      .tours-section {
+        padding: 15px 10px;
+      }
     }
 
     @media (max-width: 480px) {
       .header-section {
         padding: 15px 15px 40px 15px;
+      }
+
+      .logo-icon {
+        font-size: 1.5rem;
+      }
+
+      .brand-name {
+        font-size: 1.2rem;
+      }
+
+      .main-title {
+        font-size: 1.75rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
       }
 
       .user-info {
@@ -1285,6 +1409,12 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
       .user-status {
         font-size: 0.7rem;
+      }
+
+      .action-btn,
+      .logout-btn-simple {
+        font-size: 12px;
+        padding: 6px 10px;
       }
 
       .auth-btn {
@@ -1302,6 +1432,114 @@ import { LanguageSwitcherComponent } from '../../../app/shared/components/langua
 
       .tour-card {
         margin: 0 10px;
+      }
+
+      .tour-image {
+        height: 200px;
+      }
+
+      .tour-title {
+        font-size: 1.1rem;
+      }
+
+      .tour-description {
+        font-size: 0.85rem;
+      }
+
+      .detail-item {
+        font-size: 0.85rem;
+      }
+
+      .price-value {
+        font-size: 1.3rem;
+      }
+
+      .btn-icon {
+        font-size: 1rem;
+      }
+    }
+
+    /* Extra small devices (< 375px) */
+    @media (max-width: 374px) {
+      .header-section {
+        padding: 10px 8px 30px 8px;
+      }
+
+      .logo-icon {
+        font-size: 1.3rem;
+      }
+
+      .brand-name {
+        font-size: 1rem;
+      }
+
+      .main-title {
+        font-size: 1.5rem;
+      }
+
+      .user-actions {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .action-btn,
+      .logout-btn-simple {
+        width: 100%;
+      }
+
+      .tours-grid {
+        gap: 15px;
+      }
+
+      .tour-card {
+        margin: 0 5px;
+      }
+    }
+
+    /* Landscape mode adjustments */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .header-section {
+        padding: 10px 15px 20px 15px;
+      }
+
+      .header-main {
+        display: none;
+      }
+
+      .main-title {
+        font-size: 1.5rem;
+      }
+
+      .tour-image {
+        height: 150px;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .action-btn,
+      .logout-btn-simple,
+      .auth-btn,
+      .view-btn,
+      .book-btn,
+      .menu-btn {
+        min-height: 44px;
+        min-width: 44px;
+      }
+
+      .search-box input {
+        font-size: 16px; /* Prevent iOS zoom */
+      }
+
+      /* Improve touch targets */
+      .menu-item {
+        min-height: 48px;
+        padding: 14px 18px;
+      }
+
+      .filter-btn {
+        min-height: 44px;
+        padding: 12px 18px;
       }
     }
   `]

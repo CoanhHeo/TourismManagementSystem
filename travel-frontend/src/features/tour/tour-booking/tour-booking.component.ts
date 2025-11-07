@@ -1272,6 +1272,259 @@ import { Tour, User, TourBooking, TourDeparture, Promotion } from '../../../app/
       color: #856404;
       font-weight: 600;
     }
+
+    /* ============================================
+       Responsive Design for Mobile
+       ============================================ */
+    
+    /* Mobile (< 768px) */
+    @media (max-width: 767px) {
+      .booking-container {
+        padding: 10px;
+      }
+
+      .tour-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+      }
+
+      .tour-details {
+        padding: 0;
+      }
+
+      .tour-title {
+        font-size: 1.3rem;
+      }
+
+      .tour-subtitle {
+        font-size: 0.9rem;
+      }
+
+      .tour-price {
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .price-label {
+        font-size: 0.85rem;
+      }
+
+      .price-value {
+        font-size: 1.5rem;
+      }
+
+      .booking-form {
+        padding: 15px;
+      }
+
+      .form-section {
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+      }
+
+      .departure-card {
+        padding: 12px;
+      }
+
+      .departure-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .departure-date {
+        font-size: 1rem;
+      }
+
+      .departure-price {
+        text-align: left;
+      }
+
+      .departure-details {
+        gap: 10px;
+      }
+
+      .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-label {
+        font-size: 0.9rem;
+      }
+
+      .form-input,
+      .form-textarea {
+        padding: 10px;
+        font-size: 16px; /* Prevent iOS zoom */
+      }
+
+      .quantity-controls {
+        gap: 8px;
+      }
+
+      .quantity-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      .quantity-display {
+        min-width: 60px;
+        font-size: 1.2rem;
+      }
+
+      .booking-summary {
+        padding: 15px;
+      }
+
+      .summary-row {
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .summary-label {
+        font-size: 0.9rem;
+      }
+
+      .summary-value {
+        font-size: 0.9rem;
+      }
+
+      .total-row .summary-value {
+        font-size: 1.3rem;
+      }
+
+      .submit-btn {
+        padding: 14px;
+        font-size: 1rem;
+        min-height: 48px;
+      }
+
+      .selected-departure-info {
+        padding: 12px;
+      }
+
+      .no-departure-warning {
+        padding: 12px;
+      }
+    }
+
+    /* Small Mobile (< 480px) */
+    @media (max-width: 479px) {
+      .booking-container {
+        padding: 8px;
+      }
+
+      .tour-header {
+        padding: 12px;
+      }
+
+      .tour-title {
+        font-size: 1.2rem;
+      }
+
+      .tour-subtitle {
+        font-size: 0.85rem;
+      }
+
+      .price-value {
+        font-size: 1.3rem;
+      }
+
+      .booking-form {
+        padding: 12px;
+      }
+
+      .form-section {
+        padding: 12px;
+      }
+
+      .section-title {
+        font-size: 1rem;
+      }
+
+      .departure-card {
+        padding: 10px;
+      }
+
+      .departure-date {
+        font-size: 0.95rem;
+      }
+
+      .quantity-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+      }
+
+      .quantity-display {
+        min-width: 50px;
+        font-size: 1.1rem;
+      }
+
+      .booking-summary {
+        padding: 12px;
+      }
+
+      .total-row .summary-value {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Landscape mode (height < 500px) */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .tour-header {
+        padding: 10px;
+      }
+
+      .tour-title {
+        font-size: 1.1rem;
+      }
+
+      .form-section {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .departure-card {
+        padding: 8px;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .departure-card,
+      .quantity-btn,
+      .submit-btn {
+        min-height: 44px;
+      }
+
+      .form-input,
+      .form-textarea {
+        font-size: 16px;
+        min-height: 44px;
+      }
+
+      .quantity-btn {
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      .submit-btn {
+        min-height: 48px;
+        padding: 14px 20px;
+      }
+    }
   `]
 })
 export class TourBookingComponent implements OnInit {
